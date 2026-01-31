@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware) {
+        // Register custom middleware alias
+        $middleware->alias([
+            'session.timeout' => \App\Http\Middleware\CheckSessionTimeout::class,
+            'admin.auth' => \App\Http\Middleware\AdminAuthenticate::class, // jika mau buat middleware khusus admin
+        ]);
+
+        // Add middleware to web group
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckSessionTimeout::class, // untuk semua web routes
+        ]);
+
+        // Atau jika hanya untuk admin routes saja, bisa di route
+    })
+    ->withExceptions(function (Exceptions $exceptions) {
+        // Handle exceptions here
+    })->create();
