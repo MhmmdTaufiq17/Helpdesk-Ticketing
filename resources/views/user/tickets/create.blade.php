@@ -6,8 +6,6 @@
 <!-- Google reCAPTCHA v2 -->
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-
-@section('content')
 <div class="relative overflow-hidden">
     <!-- Header Section with Gradient -->
     <div class="relative bg-gradient-to-br from-primary-50 via-white to-primary-50 gradient-animate">
@@ -88,23 +86,23 @@
                     @csrf
 
                     <div class="p-8 md:p-12">
-                        <!-- Nama Lengkap -->
+                        <!-- Nama Client (client_name) -->
                         <div class="mb-8" data-aos="fade-up" data-aos-delay="300">
-                            <label for="full_name" class="block text-gray-900 font-bold mb-3 flex items-center">
+                            <label for="client_name" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
-                                Nama Lengkap
+                                Nama Client
                                 <span class="text-red-500 ml-1">*</span>
                             </label>
                             <input type="text"
-                                   name="full_name"
-                                   id="full_name"
-                                   value="{{ old('full_name') }}"
-                                   class="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-300 text-gray-900 placeholder-gray-400 @error('full_name') border-red-500 @enderror"
+                                   name="client_name"
+                                   id="client_name"
+                                   value="{{ old('client_name') }}"
+                                   class="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-300 text-gray-900 placeholder-gray-400 @error('client_name') border-red-500 @enderror"
                                    placeholder="Masukkan nama lengkap Anda"
                                    required>
-                            @error('full_name')
+                            @error('client_name')
                                 <p class="mt-2 text-red-600 text-sm flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
@@ -114,9 +112,9 @@
                             @enderror
                         </div>
 
-                        <!-- Email -->
+                        <!-- Email Client (client_email) -->
                         <div class="mb-8" data-aos="fade-up" data-aos-delay="350">
-                            <label for="email" class="block text-gray-900 font-bold mb-3 flex items-center">
+                            <label for="client_email" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                 </svg>
@@ -124,10 +122,10 @@
                                 <span class="text-red-500 ml-1">*</span>
                             </label>
                             <input type="email"
-                                   name="email"
-                                   id="email"
-                                   value="{{ old('email') }}"
-                                   class="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-300 text-gray-900 placeholder-gray-400 @error('email') border-red-500 @enderror"
+                                   name="client_email"
+                                   id="client_email"
+                                   value="{{ old('client_email') }}"
+                                   class="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-300 text-gray-900 placeholder-gray-400 @error('client_email') border-red-500 @enderror"
                                    placeholder="contoh@email.com"
                                    required>
                             <p class="mt-2 text-sm text-gray-500 flex items-center">
@@ -136,7 +134,7 @@
                                 </svg>
                                 Notifikasi akan dikirim ke email ini
                             </p>
-                            @error('email')
+                            @error('client_email')
                                 <p class="mt-2 text-red-600 text-sm flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
@@ -146,7 +144,7 @@
                             @enderror
                         </div>
 
-                        <!-- Judul Laporan -->
+                        <!-- Judul Laporan (title) -->
                         <div class="mb-8" data-aos="fade-up" data-aos-delay="400">
                             <label for="title" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,20 +170,19 @@
                             @enderror
                         </div>
 
-                        <!-- Kategori -->
+                        <!-- Kategori (category_id) -->
                         <div class="mb-8" data-aos="fade-up" data-aos-delay="450">
                             <label for="category_id" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                 </svg>
                                 Kategori
-                                <span class="text-red-500 ml-1">*</span>
+                                <span class="text-gray-500 ml-1">(Opsional)</span>
                             </label>
                             <select name="category_id"
                                     id="category_id"
-                                    class="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-300 text-gray-900 @error('category_id') border-red-500 @enderror"
-                                    required>
-                                <option value="">Pilih kategori masalah</option>
+                                    class="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-300 text-gray-900 @error('category_id') border-red-500 @enderror">
+                                <option value="">Pilih kategori masalah (opsional)</option>
                                 @foreach($categories as $category)
                                     <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                         {{ $category->name }}
@@ -202,7 +199,7 @@
                             @enderror
                         </div>
 
-                        <!-- Deskripsi -->
+                        <!-- Deskripsi (description) -->
                         <div class="mb-8" data-aos="fade-up" data-aos-delay="500">
                             <label for="description" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,7 +230,7 @@
                             @enderror
                         </div>
 
-                        <!-- Lampiran -->
+                        <!-- Lampiran (attachment) -->
                         <div class="mb-8" data-aos="fade-up" data-aos-delay="550">
                             <label for="attachment" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -350,218 +347,124 @@
         </div>
     </div>
 </div>
+
 <style>
     @keyframes blob {
-        0%, 100% {
-            transform: translate(0, 0) scale(1);
-        }
-        25% {
-            transform: translate(20px, -50px) scale(1.1);
-        }
-        50% {
-            transform: translate(-20px, 20px) scale(0.9);
-        }
-        75% {
-            transform: translate(50px, 50px) scale(1.05);
-        }
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(20px, -50px) scale(1.1); }
+        50% { transform: translate(-20px, 20px) scale(0.9); }
+        75% { transform: translate(50px, 50px) scale(1.05); }
     }
-
-    .animate-blob {
-        animation: blob 10s infinite;
+    .animate-blob { animation: blob 10s infinite; }
+    .animation-delay-2000 { animation-delay: 2s; }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
-
-    .animation-delay-2000 {
-        animation-delay: 2s;
-    }
+    .animate-shake { animation: shake 0.5s; }
 </style>
 
-@push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize AOS
-        if (typeof AOS !== 'undefined') {
-            AOS.init({
-                duration: 1000,
-                easing: 'ease-in-out-cubic',
-                once: true,
-                offset: 120,
-            });
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Script loaded');
 
-        // Form validation
-        const form = document.getElementById('ticketForm');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                // Check if grecaptcha is loaded
-                if (typeof grecaptcha === 'undefined') {
-                    e.preventDefault();
-                    alert('reCAPTCHA belum dimuat. Silakan refresh halaman.');
-                    return false;
-                }
+    // Initialize AOS
+    if (typeof AOS !== 'undefined') {
+        AOS.init({ duration: 1000, easing: 'ease-in-out-cubic', once: true, offset: 120 });
+    }
 
-                const recaptchaResponse = grecaptcha.getResponse();
+    // Form validation
+    const form = document.getElementById('ticketForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (typeof grecaptcha === 'undefined') {
+                e.preventDefault();
+                alert('reCAPTCHA belum dimuat. Silakan refresh halaman.');
+                return false;
+            }
+            if (!grecaptcha.getResponse()) {
+                e.preventDefault();
+                alert('Mohon selesaikan verifikasi reCAPTCHA terlebih dahulu!');
+                return false;
+            }
+        });
+    }
 
-                if (!recaptchaResponse) {
-                    e.preventDefault();
-                    alert('Mohon selesaikan verifikasi reCAPTCHA terlebih dahulu!');
-                    return false;
-                }
-            });
-        }
+    // File validation
+    const fileInput = document.getElementById('attachment');
+    if (fileInput) {
+        console.log('✅ File input found');
+        fileInput.addEventListener('change', function(e) {
+            console.log('📁 File selected');
+            const file = e.target.files[0];
+            removeFileNotification();
 
-        // File input preview
-        @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Initialize AOS
-                if (typeof AOS !== 'undefined') {
-                    AOS.init({
-                        duration: 1000,
-                        easing: 'ease-in-out-cubic',
-                        once: true,
-                        offset: 120,
-                    });
-                }
+            if (!file) return;
 
-                // Form validation
-                const form = document.getElementById('ticketForm');
-                if (form) {
-                    form.addEventListener('submit', function(e) {
-                        if (typeof grecaptcha === 'undefined') {
-                            e.preventDefault();
-                            alert('reCAPTCHA belum dimuat. Silakan refresh halaman.');
-                            return false;
-                        }
+            const maxSize = 5;
+            const allowedTypes = {'image/jpeg':'JPG','image/jpg':'JPG','image/png':'PNG','application/pdf':'PDF','application/msword':'DOC','application/vnd.openxmlformats-officedocument.wordprocessingml.document':'DOCX'};
+            const allowedExt = ['jpg','jpeg','png','pdf','doc','docx'];
+            const fileName = file.name;
+            const fileSize = file.size / 1024 / 1024;
+            const fileExt = fileName.split('.').pop().toLowerCase();
 
-                        const recaptchaResponse = grecaptcha.getResponse();
-                        if (!recaptchaResponse) {
-                            e.preventDefault();
-                            alert('Mohon selesaikan verifikasi reCAPTCHA terlebih dahulu!');
-                            return false;
-                        }
-                    });
-                }
+            if (!allowedTypes[file.type] && !allowedExt.includes(fileExt)) {
+                showFileError('Format file tidak didukung!', 'Gunakan: JPG, PNG, PDF, DOC, DOCX');
+                fileInput.value = '';
+                return;
+            }
 
-                // File input validation dengan preview
-                const fileInput = document.getElementById('attachment');
-                if (fileInput) {
-                    fileInput.addEventListener('change', function(e) {
-                        const file = e.target.files[0];
+            if (fileSize > maxSize) {
+                showFileError('Ukuran file terlalu besar!', `Ukuran: ${fileSize.toFixed(2)} MB | Max: ${maxSize} MB`);
+                fileInput.value = '';
+                return;
+            }
 
-                        if (!file) return;
+            const sizeText = fileSize < 1 ? `${(fileSize * 1024).toFixed(0)} KB` : `${fileSize.toFixed(2)} MB`;
+            showFileSuccess(fileName, sizeText);
+        });
+    }
 
-                        // Konfigurasi validasi
-                        const maxSize = 5; // MB
-                        const allowedTypes = {
-                            'image/jpeg': 'JPG/JPEG',
-                            'image/jpg': 'JPG',
-                            'image/png': 'PNG',
-                            'application/pdf': 'PDF',
-                            'application/msword': 'DOC',
-                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX'
-                        };
-                        const allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+    function showFileError(title, msg) {
+        insertFileNotification(`
+            <div class="mt-3 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg animate-shake">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div><p class="font-bold text-red-800">${title}</p><p class="text-sm text-red-700 mt-1">${msg}</p></div>
+                </div>
+            </div>
+        `);
+        setTimeout(removeFileNotification, 5000);
+    }
 
-                        const fileName = file.name;
-                        const fileSize = file.size / 1024 / 1024; // MB
-                        const fileExtension = fileName.split('.').pop().toLowerCase();
+    function showFileSuccess(name, size) {
+        insertFileNotification(`
+            <div class="mt-3 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div class="flex-1"><p class="font-bold text-green-800">✅ File berhasil dipilih!</p><p class="text-sm text-green-700 mt-1">📄 ${name}<br>📊 ${size}</p></div>
+                </div>
+            </div>
+        `);
+    }
 
-                        // Validasi tipe file
-                        const isValidType = allowedTypes[file.type] || allowedExtensions.includes(fileExtension);
-                        if (!isValidType) {
-                            showFileError('Format file tidak didukung!', 'Format yang diperbolehkan: JPG, PNG, PDF, DOC, DOCX');
-                            fileInput.value = '';
-                            return;
-                        }
+    function insertFileNotification(html) {
+        const parent = fileInput.parentElement.parentElement;
+        const div = document.createElement('div');
+        div.id = 'fileNotification';
+        div.innerHTML = html;
+        parent.appendChild(div);
+    }
 
-                        // Validasi ukuran file
-                        if (fileSize > maxSize) {
-                            showFileError('Ukuran file terlalu besar!', `Ukuran: ${fileSize.toFixed(2)} MB | Maksimal: ${maxSize} MB`);
-                            fileInput.value = '';
-                            return;
-                        }
-
-                        // Tampilkan konfirmasi sukses
-                        showFileSuccess(fileName, fileSize);
-                    });
-                }
-
-                // Function untuk menampilkan error
-                function showFileError(title, message) {
-                    const errorHtml = `
-                        <div class="mt-3 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg animate-shake">
-                            <div class="flex items-start">
-                                <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                                </svg>
-                                <div>
-                                    <p class="font-bold text-red-800">${title}</p>
-                                    <p class="text-sm text-red-700 mt-1">${message}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
-                    const parent = fileInput.parentElement.parentElement;
-                    let errorDiv = parent.querySelector('#fileError');
-                    if (!errorDiv) {
-                        errorDiv = document.createElement('div');
-                        errorDiv.id = 'fileError';
-                        parent.appendChild(errorDiv);
-                    }
-                    errorDiv.innerHTML = errorHtml;
-
-                    // Hapus notifikasi setelah 5 detik
-                    setTimeout(() => {
-                        errorDiv.innerHTML = '';
-                    }, 5000);
-                }
-
-                // Function untuk menampilkan sukses
-                function showFileSuccess(fileName, fileSize) {
-                    const fileSizeText = fileSize < 1 ? `${(fileSize * 1024).toFixed(0)} KB` : `${fileSize.toFixed(2)} MB`;
-                    const successHtml = `
-                        <div class="mt-3 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
-                            <div class="flex items-start">
-                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                </svg>
-                                <div class="flex-1">
-                                    <p class="font-bold text-green-800">✅ File berhasil dipilih!</p>
-                                    <p class="text-sm text-green-700 mt-1">
-                                        <strong>Nama:</strong> ${fileName}<br>
-                                        <strong>Ukuran:</strong> ${fileSizeText}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
-                    const parent = fileInput.parentElement.parentElement;
-                    let successDiv = parent.querySelector('#fileError');
-                    if (!successDiv) {
-                        successDiv = document.createElement('div');
-                        successDiv.id = 'fileError';
-                        parent.appendChild(successDiv);
-                    }
-                    successDiv.innerHTML = successHtml;
-                }
-            });
-        </script>
-
-        <style>
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        .animate-shake {
-            animation: shake 0.5s;
-        }
-        </style>
-        @endpush
-    });
+    function removeFileNotification() {
+        const notif = document.getElementById('fileNotification');
+        if (notif) notif.remove();
+    }
+});
 </script>
-
-@endpush
 @endsection
