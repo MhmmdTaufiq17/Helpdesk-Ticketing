@@ -17,15 +17,15 @@
 
         <div class="container mx-auto px-4 py-16 relative">
             <div class="max-w-4xl mx-auto text-center">
-                <div class="inline-block mb-4" data-aos="fade-down" data-aos-delay="100">
+                <div class="inline-block mb-4">
                     <span class="bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-semibold">
                         📝 Submit Ticket
                     </span>
                 </div>
-                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight" data-aos="fade-up" data-aos-delay="200">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
                     Buat <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-800">Tiket Baru</span>
                 </h1>
-                <p class="text-xl text-gray-600 leading-relaxed" data-aos="fade-up" data-aos-delay="300">
+                <p class="text-xl text-gray-600 leading-relaxed">
                     Laporkan masalah teknis Anda dan tim support kami akan segera membantu menyelesaikannya
                 </p>
             </div>
@@ -36,7 +36,7 @@
     <div class="container mx-auto px-4 py-12">
         <div class="max-w-4xl mx-auto">
             <!-- Progress Steps -->
-            <div class="mb-12" data-aos="fade-up">
+            <div class="mb-12">
                 <div class="flex items-center justify-center space-x-4">
                     <div class="flex items-center">
                         <div class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg">
@@ -63,7 +63,7 @@
 
             <!-- Alert untuk errors -->
             @if ($errors->any())
-            <div class="mb-8 bg-red-50 border-l-4 border-red-500 p-6 rounded-xl shadow-sm" data-aos="fade-up">
+            <div class="mb-8 bg-red-50 border-l-4 border-red-500 p-6 rounded-xl shadow-sm">
                 <div class="flex items-start">
                     <svg class="w-6 h-6 text-red-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -81,13 +81,13 @@
             @endif
 
             <!-- Main Form Card -->
-            <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+            <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
                 <form action="{{ route('user.tickets.store') }}" method="POST" enctype="multipart/form-data" id="ticketForm">
                     @csrf
 
                     <div class="p-8 md:p-12">
                         <!-- Nama Client (client_name) -->
-                        <div class="mb-8" data-aos="fade-up" data-aos-delay="300">
+                        <div class="mb-8">
                             <label for="client_name" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -113,7 +113,7 @@
                         </div>
 
                         <!-- Email Client (client_email) -->
-                        <div class="mb-8" data-aos="fade-up" data-aos-delay="350">
+                        <div class="mb-8">
                             <label for="client_email" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
@@ -145,7 +145,7 @@
                         </div>
 
                         <!-- Judul Laporan (title) -->
-                        <div class="mb-8" data-aos="fade-up" data-aos-delay="400">
+                        <div class="mb-8">
                             <label for="title" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
@@ -171,7 +171,7 @@
                         </div>
 
                         <!-- Kategori (category_id) -->
-                        <div class="mb-8" data-aos="fade-up" data-aos-delay="450">
+                        <div class="mb-8">
                             <label for="category_id" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
@@ -200,7 +200,7 @@
                         </div>
 
                         <!-- Deskripsi (description) -->
-                        <div class="mb-8" data-aos="fade-up" data-aos-delay="500">
+                        <div class="mb-8">
                             <label for="description" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
@@ -231,7 +231,7 @@
                         </div>
 
                         <!-- Lampiran (attachment) -->
-                        <div class="mb-8" data-aos="fade-up" data-aos-delay="550">
+                        <div class="mb-8">
                             <label for="attachment" class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
@@ -262,7 +262,7 @@
                         </div>
 
                         <!-- CAPTCHA -->
-                        <div class="mb-8" data-aos="fade-up" data-aos-delay="600">
+                        <div class="mb-8">
                             <label class="block text-gray-900 font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
@@ -284,7 +284,7 @@
                         </div>
 
                         <!-- Submit Buttons -->
-                        <div class="flex flex-col sm:flex-row gap-4 pt-4" data-aos="fade-up" data-aos-delay="700">
+                        <div class="flex flex-col sm:flex-row gap-4 pt-4">
                             <button type="submit"
                                     class="flex-1 group relative inline-flex items-center justify-center bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105">
                                 <span class="relative z-10 flex items-center">
@@ -308,7 +308,7 @@
 
             <!-- Info Box -->
             <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-primary-50 border-l-4 border-primary-500 p-6 rounded-xl" data-aos="fade-up" data-aos-delay="800">
+                <div class="bg-primary-50 border-l-4 border-primary-500 p-6 rounded-xl">
                     <div class="flex items-start">
                         <svg class="w-6 h-6 text-primary-600 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -320,7 +320,7 @@
                     </div>
                 </div>
 
-                <div class="bg-purple-50 border-l-4 border-purple-500 p-6 rounded-xl" data-aos="fade-up" data-aos-delay="900">
+                <div class="bg-purple-50 border-l-4 border-purple-500 p-6 rounded-xl">
                     <div class="flex items-start">
                         <svg class="w-6 h-6 text-purple-600 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
@@ -332,7 +332,7 @@
                     </div>
                 </div>
 
-                <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-xl" data-aos="fade-up" data-aos-delay="1000">
+                <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-xl">
                     <div class="flex items-start">
                         <svg class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
@@ -368,11 +368,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Script loaded');
-
-    // Initialize AOS
-    if (typeof AOS !== 'undefined') {
-        AOS.init({ duration: 1000, easing: 'ease-in-out-cubic', once: true, offset: 120 });
-    }
 
     // Form validation
     const form = document.getElementById('ticketForm');

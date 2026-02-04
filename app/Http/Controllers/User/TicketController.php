@@ -7,7 +7,9 @@ use App\Models\Ticket;
 use App\Models\Category;
 use App\Rules\RecaptchaValidation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use App\Mail\TicketCreated;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
@@ -16,7 +18,6 @@ class TicketController extends Controller
      */
     public function create()
     {
-        // PERBAIKAN: Gunakan orderBy('category_name') bukan 'name'
         $categories = Category::orderBy('category_name', 'asc')->get();
 
         return view('user.tickets.create', compact('categories'));
@@ -27,14 +28,13 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input - SESUAIKAN DENGAN STRUKTUR DATABASE
         $validated = $request->validate([
-            'client_name' => 'required|string|max:255', // PERBAIKAN: client_name bukan full_name
-            'client_email' => 'required|email|max:255', // PERBAIKAN: client_email bukan email
+            'client_name' => 'required|string|max:255',
+            'client_email' => 'required|email|max:255',
             'title' => 'required|string|max:255',
-            'category_id' => 'nullable|exists:categories,id', // PERBAIKAN: nullable bukan required
+            'category_id' => 'nullable|exists:categories,id',
             'description' => 'required|string',
-            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120', // 5MB
+            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
             'g-recaptcha-response' => ['required', new RecaptchaValidation()],
         ], [
             'client_name.required' => 'Nama lengkap wajib diisi.',
@@ -48,10 +48,8 @@ class TicketController extends Controller
             'g-recaptcha-response.required' => 'Verifikasi reCAPTCHA wajib diisi.',
         ]);
 
-        // Generate unique ticket code - SESUAIKAN DENGAN FIELD DATABASE
+        // Generate unique ticket code
         $ticketCode = 'TKT' . rand(10000, 99999);
-
-        // Pastikan kode unik
         while (Ticket::where('ticket_code', $ticketCode)->exists()) {
             $ticketCode = 'TKT' . rand(10000, 99999);
         }
@@ -62,32 +60,45 @@ class TicketController extends Controller
             $attachmentPath = $request->file('attachment')->store('attachments', 'public');
         }
 
-        // Create ticket - SESUAIKAN DENGAN STRUKTUR DATABASE
+        // Create ticket
         $ticket = Ticket::create([
-            'ticket_code' => $ticketCode, // PERBAIKAN: ticket_code bukan ticket_number
+            'ticket_code' => $ticketCode,
             'client_name' => $validated['client_name'],
             'client_email' => $validated['client_email'],
             'title' => $validated['title'],
             'category_id' => $validated['category_id'],
             'description' => $validated['description'],
             'attachment' => $attachmentPath,
-            'status' => 'open', // Status awal
-            'priority' => 'medium', // Priority default
+            'status' => 'open',
+            'priority' => 'medium',
         ]);
 
-        // TODO: Kirim email notifikasi ke user
-        // Mail::to($ticket->client_email)->send(new TicketCreated($ticket));
+        // Kirim email notifikasi ke user
+        try {
+            Mail::to($ticket->client_email)->send(new TicketCreated($ticket));
 
-        // Redirect dengan success message
+            // Optional: Kirim notifikasi ke admin
+            $adminEmail = config('mail.admin_email');
+            if ($adminEmail) {
+                Mail::to($adminEmail)->send(new \App\Mail\TicketCreatedAdmin($ticket));
+            }
+
+            Log::info('Email sent successfully for ticket: ' . $ticketCode);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to send email: ' . $e->getMessage());
+            // Lanjutkan tanpa throw error agar user tetap dapat tiketnya
+        }
+
         return redirect()
-            ->route('user.tickets.success', ['ticket_code' => $ticketCode]) // PERBAIKAN: ticket_code bukan ticket_number
+            ->route('user.tickets.success', ['ticket_code' => $ticketCode])
             ->with('success', 'Tiket berhasil dibuat! Nomor tiket Anda: ' . $ticketCode);
     }
 
     /**
      * Show ticket success page.
      */
-    public function success($ticketCode) // PERBAIKAN: Parameter ticket_code bukan ticket_number
+    public function success($ticketCode)
     {
         $ticket = Ticket::where('ticket_code', $ticketCode)->firstOrFail();
 
