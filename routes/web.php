@@ -23,7 +23,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/home', [HomeController::class, 'index'])->name('user.home');
 
 // Public Ticket Routes (Tidak perlu login)
-// PERBAIKAN: Ubah dari 'tickets.' menjadi 'user.tickets.'
 Route::prefix('tickets')->name('user.tickets.')->group(function () {
     // Create ticket tanpa login
     Route::get('/create', [TicketController::class, 'create'])->name('create');
@@ -41,7 +40,7 @@ Route::prefix('tickets')->name('user.tickets.')->group(function () {
     Route::get('/view/{ticket_code}', [TicketTrackController::class, 'showPublic'])->name('show');
 });
 
-// Static Pages (Optional) - Tetap 'pages.'
+// Static Pages (Optional)
 Route::prefix('pages')->name('pages.')->group(function () {
     Route::get('/about', function () {
         return view('pages.about');
@@ -59,34 +58,6 @@ Route::prefix('pages')->name('pages.')->group(function () {
         return view('pages.privacy');
     })->name('privacy');
 });
-
-// Email Preview Route (Hanya untuk development)
-if (app()->environment('local')) {
-    Route::get('/email-preview/ticket-created', function () {
-        $ticket = \App\Models\Ticket::first();
-
-        if (!$ticket) {
-            // Create dummy ticket for preview
-            $ticket = new \App\Models\Ticket([
-                'ticket_code' => 'TKT' . rand(10000, 99999),
-                'client_name' => 'John Doe',
-                'client_email' => 'john@example.com',
-                'title' => 'Test Ticket Title',
-                'description' => 'This is a test description for the ticket preview. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                'status' => 'open',
-                'priority' => 'medium',
-                'created_at' => now(),
-            ]);
-
-            // Add category relationship if needed
-            $ticket->setRelation('category', new \App\Models\Category([
-                'category_name' => 'Technical Support'
-            ]));
-        }
-
-        return new \App\Mail\TicketCreated($ticket);
-    })->name('email.preview.ticket');
-}
 
 // Fallback Route untuk 404
 Route::fallback(function () {
