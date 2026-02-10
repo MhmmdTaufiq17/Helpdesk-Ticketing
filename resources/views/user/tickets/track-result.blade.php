@@ -3,88 +3,71 @@
 @section('title', 'Status Tiket #' . $ticket->ticket_code)
 
 @section('content')
-<!-- Hero Section -->
-<section class="relative bg-gradient-to-br from-primary-50 via-white to-primary-50 gradient-animate">
-    <!-- Animated Background Elements -->
-    <div class="absolute inset-0 opacity-20">
-        <div class="absolute top-20 left-10 w-72 h-72 bg-white rounded-full filter blur-3xl animate-blob"></div>
-        <div class="absolute top-40 right-10 w-72 h-72 bg-purple-300 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
-    </div>
+<div class="relative overflow-hidden">
+    <!-- Header Section dengan Gradient (Sesuai dengan Create) -->
+    <div class="relative bg-gradient-to-br from-primary-50 via-white to-primary-50 gradient-animate">
+        <!-- Background Decorations -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        </div>
 
-    <div class="container mx-auto px-4 py-12 md:py-20 relative z-10">
-        <div class="max-w-4xl mx-auto text-left lg:text-left">
-            <div class="inline-block mb-4">
-                <span class="bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-semibold">
-                    ✓ Tiket Ditemukan
-                </span>
-            </div>
-
-            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4" data-aos="fade-up" data-aos-delay="100">
-                Status Tiket Anda
-            </h1>
-
-            <div class="inline-block bg-white p-3 rounded-xl border border-gray-100 mb-6">
-                <p class="text-sm text-gray-500 mb-1">Kode Tiket</p>
-                <p class="text-lg font-bold font-mono">{{ $ticket->ticket_code }}</p>
-            </div>
-
-            <!-- Status Badge -->
-            <div class="inline-block" data-aos="fade-up" data-aos-delay="300">
-                @php
-                    // Mapping status dari database ke tampilan
-                    $statusConfig = [
-                        'opn' => [
-                            'label' => 'Dibuka',
-                            'color' => 'blue',
-                            'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-                            'badge_class' => 'bg-blue-100 text-blue-700 border-blue-200'
-                        ],
-                        'progress' => [
-                            'label' => 'Sedang Diproses',
-                            'color' => 'yellow',
-                            'icon' => 'M13 10V3L4 14h7v7l9-11h-7z',
-                            'badge_class' => 'bg-yellow-100 text-yellow-700 border-yellow-200'
-                        ],
-                        'resolved' => [
-                            'label' => 'Selesai',
-                            'color' => 'green',
-                            'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-                            'badge_class' => 'bg-green-100 text-green-700 border-green-200'
-                        ],
-                        'closed' => [
-                            'label' => 'Ditutup',
-                            'color' => 'gray',
-                            'icon' => 'M6 18L18 6M6 6l12 12',
-                            'badge_class' => 'bg-gray-100 text-gray-700 border-gray-200'
-                        ],
-                    ];
-
-                    // Ambil konfigurasi berdasarkan nilai di database
-                    $status = $statusConfig[$ticket->status] ?? $statusConfig['opn'];
-                @endphp
-
-                <div class="px-6 py-3 rounded-xl font-bold text-lg flex items-center space-x-3 shadow-sm border border-gray-100 bg-white">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $status['icon'] }}"></path>
-                    </svg>
-                    <span class="text-gray-800">{{ $status['label'] }}</span>
+        <div class="container mx-auto px-4 py-16 relative">
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="inline-block mb-4">
+                    <span class="bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-semibold">
+                        ✓ Tiket Ditemukan
+                    </span>
                 </div>
+
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+                    Status <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-800">Tiket Anda</span>
+                </h1>
+
+                <p class="text-xl text-gray-600 leading-relaxed">
+                    Lacak perkembangan tiket support Anda secara real-time
+                </p>
             </div>
         </div>
     </div>
 
-    <!-- Wave Divider -->
-    <div class="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" fill="#F9FAFB"/>
-        </svg>
-    </div>
-</section>
+    <!-- Result Section -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+            <!-- Kode Tiket Card -->
+            <div class="bg-white rounded-3xl shadow-xl border border-gray-200 p-6 mb-8" data-aos="fade-up">
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-500 mb-2">KODE TIKET</h3>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl md:text-3xl font-bold font-mono bg-gray-100 px-4 py-2 rounded-lg">
+                                {{ $ticket->ticket_code }}
+                            </span>
+                            <!-- Status Badge - LANGSUNG DARI DATABASE -->
+                            @php
+                                // Warna berdasarkan status
+                                $badgeColors = [
+                                    'open' => 'bg-blue-100 text-blue-700 border border-blue-200',
+                                    'in_progress' => 'bg-yellow-100 text-yellow-700 border border-yellow-200',
+                                    'closed' => 'bg-gray-100 text-gray-700 border border-gray-200',
+                                ];
 
-<!-- Result Section -->
-<section class="py-20 -mt-20 relative z-20">
-    <div class="container mx-auto px-4">
-        <div class="max-w-3xl mx-auto">
+                                $badgeClass = $badgeColors[strtolower($ticket->status)] ?? 'bg-gray-100 text-gray-700 border border-gray-200';
+                            @endphp
+
+                            <span class="{{ $badgeClass }} px-4 py-2 rounded-lg font-bold inline-block">
+                                {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 md:mt-0">
+                        <p class="text-sm text-gray-500">Terakhir Diperbarui</p>
+                        <p class="font-semibold">{{ $ticket->updated_at->format('d M Y, H:i') }}</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Main Card -->
             <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 mb-8" data-aos="zoom-in">
                 <!-- Summary Section -->
@@ -97,10 +80,10 @@
                     </h2>
 
                     <div class="space-y-6">
-                        <!-- Subjek -->
+                        <!-- Title -->
                         <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                            <p class="text-sm text-gray-500 mb-2">Subjek</p>
-                            <p class="text-lg font-semibold text-gray-900">{{ $ticket->subject }}</p>
+                            <p class="text-sm text-gray-500 mb-2">Judul</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $ticket->title }}</p>
                         </div>
 
                         <!-- Informasi Detail -->
@@ -108,9 +91,15 @@
                             <!-- Kategori -->
                             <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
                                 <p class="text-sm text-gray-500 mb-2">Kategori</p>
-                                <span class="inline-block bg-primary-100 text-primary-700 px-3 py-1 rounded-lg text-sm font-semibold capitalize">
-                                    {{ str_replace('_', ' ', $ticket->category) }}
-                                </span>
+                                @if($ticket->category)
+                                    <span class="inline-block bg-primary-100 text-primary-700 px-3 py-1 rounded-lg text-sm font-semibold">
+                                        {{ $ticket->category->name }} <!-- Ambil dari relationship -->
+                                    </span>
+                                @else
+                                    <span class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm font-semibold">
+                                        Tidak ada kategori
+                                    </span>
+                                @endif
                             </div>
 
                             <!-- Prioritas -->
@@ -118,9 +107,9 @@
                                 <p class="text-sm text-gray-500 mb-2">Prioritas</p>
                                 @php
                                     $priorityConfig = [
-                                        'low' => ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'label' => 'Rendah'],
-                                        'medium' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-700', 'label' => 'Sedang'],
-                                        'high' => ['bg' => 'bg-red-100', 'text' => 'text-red-700', 'label' => 'Tinggi'],
+                                        'low' => ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'label' => 'Low'],
+                                        'medium' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-700', 'label' => 'Medium'],
+                                        'high' => ['bg' => 'bg-red-100', 'text' => 'text-red-700', 'label' => 'High'],
                                     ];
                                     $priority = $priorityConfig[$ticket->priority] ?? $priorityConfig['medium'];
                                 @endphp
@@ -144,6 +133,12 @@
                                     {{ $ticket->updated_at->format('d M Y, H:i') }}
                                 </p>
                             </div>
+                        </div>
+
+                        <!-- Deskripsi -->
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <p class="text-sm text-gray-500 mb-2">Deskripsi Masalah</p>
+                            <p class="text-gray-900 whitespace-pre-line">{{ $ticket->description }}</p>
                         </div>
 
                         <!-- Timeline Status -->
@@ -177,8 +172,17 @@
                                 <!-- Status Saat Ini -->
                                 <div class="flex items-start space-x-3">
                                     <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        @php
+                                            // Ikon berdasarkan status
+                                            $statusIcons = [
+                                                'open' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+                                                'in_progress' => 'M13 10V3L4 14h7v7l9-11h-7z',
+                                                'closed' => 'M6 18L18 6M6 6l12 12',
+                                            ];
+                                            $icon = $statusIcons[strtolower($ticket->status)] ?? 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z';
+                                        @endphp
                                         <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon }}"></path>
                                         </svg>
                                     </div>
                                     <div class="flex-1">
@@ -187,7 +191,7 @@
                                             <span class="text-sm text-gray-500">{{ $ticket->updated_at->format('d M Y, H:i') }}</span>
                                         </div>
                                         <p class="text-gray-600 text-sm mt-1">
-                                            Status: <span class="font-semibold">{{ $status['label'] }}</span>
+                                            Status: <span class="font-semibold">{{ ucfirst(str_replace('_', ' ', $ticket->status)) }}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -226,8 +230,47 @@
                 </div>
             </div>
 
+            <!-- Info Boxes (Sesuai dengan Create) -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6" data-aos="fade-up">
+                <div class="bg-primary-50 border-l-4 border-primary-500 p-6 rounded-xl">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-primary-600 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="font-bold text-primary-900 mb-1">Respons Cepat</h4>
+                            <p class="text-sm text-primary-700">Tim kami akan merespons dalam 24 jam</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-purple-50 border-l-4 border-purple-500 p-6 rounded-xl">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-purple-600 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="font-bold text-purple-900 mb-1">Notifikasi Email</h4>
+                            <p class="text-sm text-purple-700">Dapatkan update via email Anda</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-xl">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="font-bold text-green-900 mb-1">Data Aman</h4>
+                            <p class="text-sm text-green-700">Informasi Anda dilindungi SSL</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Info Tambahan -->
-            <div class="bg-gradient-to-br from-primary-50 to-blue-50 rounded-3xl p-6 border border-primary-100" data-aos="fade-up">
+            <div class="mt-8 bg-gradient-to-br from-primary-50 to-blue-50 rounded-3xl p-6 border border-primary-100" data-aos="fade-up">
                 <div class="flex items-start space-x-4">
                     <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
                         <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,5 +303,26 @@
             </div>
         </div>
     </div>
-</section>
+</div>
+
+<style>
+    @keyframes blob {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(20px, -50px) scale(1.1); }
+        50% { transform: translate(-20px, 20px) scale(0.9); }
+        75% { transform: translate(50px, 50px) scale(1.05); }
+    }
+    .animate-blob { animation: blob 10s infinite; }
+    .animation-delay-2000 { animation-delay: 2s; }
+    .gradient-animate {
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+    }
+
+    @keyframes gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+</style>
 @endsection
