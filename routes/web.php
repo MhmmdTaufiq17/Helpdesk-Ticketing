@@ -32,9 +32,13 @@ Route::prefix('tickets')->name('user.tickets.')->group(function () {
     Route::get('/success/{ticket_code}', [TicketController::class, 'success'])->name('success');
 
     // Track ticket tanpa login
-    Route::get('/track', [TicketTrackController::class, 'showTrackForm'])->name('track.form');
-    Route::post('/track', [TicketTrackController::class, 'track'])->name('track');
-    Route::get('/track/{ticket_code}', [TicketTrackController::class, 'showTrackResult'])->name('track.result');
+
+ // Track ticket tanpa login
+Route::get('/track', [TicketTrackController::class, 'showTrackForm'])->name('track.form');
+Route::post('/track', [TicketTrackController::class, 'track'])->name('track');
+Route::post('/track/search', [TicketTrackController::class, 'trackAjax'])->name('track.do');
+Route::get('/track/{ticket_code}', [TicketTrackController::class, 'showTrackResult'])->name('track.result');
+
 
     // View ticket details tanpa login (dengan code)
     Route::get('/view/{ticket_code}', [TicketTrackController::class, 'showPublic'])->name('show');

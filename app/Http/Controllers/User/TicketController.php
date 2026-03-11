@@ -91,8 +91,8 @@ class TicketController extends Controller
         }
 
         return redirect()
-            ->route('user.tickets.success', ['ticket_code' => $ticketCode])
-            ->with('success', 'Tiket berhasil dibuat! Nomor tiket Anda: ' . $ticketCode);
+    ->route('user.home')
+    ->with('success', 'Tiket #' . $ticketCode . ' berhasil dibuat! Cek email Anda untuk detailnya.');
     }
 
     /**

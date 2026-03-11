@@ -94,4 +94,27 @@ class TicketTrackController extends Controller
 
             return $configs[$status] ?? $configs['open'];
         }
+
+        public function trackAjax(Request $request)
+{
+    $request->validate([
+        'ticket_code' => 'required|string|max:20'
+    ], [
+        'ticket_code.required' => 'Kode tiket wajib diisi'
+    ]);
+
+    $ticketCode = strtoupper(trim($request->ticket_code));
+    $ticket = Ticket::where('ticket_code', $ticketCode)->first();
+
+    if (!$ticket) {
+        return response()->json([
+            'message' => 'Tiket tidak ditemukan. Pastikan kode tiket sudah benar.'
+        ], 404);
+    }
+
+    return response()->json([
+        'ticket'   => $ticket,
+        'redirect' => route('user.tickets.track.result', $ticket->ticket_code),
+    ]);
+}
 }
