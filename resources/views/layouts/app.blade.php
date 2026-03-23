@@ -7,6 +7,8 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+
     <style>
         *,*::before,*::after{box-sizing:border-box}
         :root{
@@ -19,6 +21,46 @@
         }
         html{scroll-behavior:smooth}
         body{font-family:'Sora',sans-serif;background:var(--surface-2);color:var(--ink);margin:0;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+        /* NProgress Custom Styling - Spinner Biru di Tengah */
+        #nprogress .bar {
+            display: none !important;
+        }
+
+        #nprogress .spinner {
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            position: fixed !important;
+            z-index: 9999 !important;
+        }
+
+        #nprogress .spinner-icon {
+            width: 48px !important;
+            height: 48px !important;
+            border-width: 4px !important;
+            border-top-color: var(--accent) !important;
+            border-left-color: var(--accent) !important;
+            animation: nprogress-spinner 0.6s linear infinite !important;
+        }
+
+        /* Background semi-transparan saat loading */
+        #nprogress {
+            background: rgba(255, 255, 255, 0.92) !important;
+            backdrop-filter: blur(4px);
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 9998 !important;
+        }
+
+        /* Animasi spinner */
+        @keyframes nprogress-spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
         /* NAV */
         .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.88);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid var(--surface-3);height:64px}
@@ -186,7 +228,7 @@
 </footer>
 
 <script>
-(function(){
+    // ========== Fungsi Search (tanpa NProgress) ==========
     var CSRF = '{{ csrf_token() }}';
     var TRACK_URL = '{{ route("user.tickets.track.do") }}';
 
@@ -230,7 +272,6 @@
             var data = await res.json();
 
             if(res.ok && data.redirect){
-                // Langsung redirect ke halaman detail tiket
                 window.location.href = data.redirect;
             } else {
                 setLoading(btn, false);
@@ -257,9 +298,7 @@
             if(e.key === 'Enter'){ doSearch(dInput.value, dBtn, dMsg, dErr); }
             if(e.key === 'Escape'){ dErr.classList.remove('show'); }
         });
-        // hide error on new input
         dInput.addEventListener('input', function(){ dErr.classList.remove('show'); });
-        // hide error when clicking outside
         document.addEventListener('click', function(e){
             if(!document.getElementById('desktopSearchWrap').contains(e.target)){
                 dErr.classList.remove('show');
@@ -292,7 +331,6 @@
             }
         });
     }
-})();
 </script>
 
 </body>

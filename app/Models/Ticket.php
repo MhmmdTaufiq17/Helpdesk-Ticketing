@@ -37,6 +37,11 @@ class Ticket extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function histories()
+    {
+        return $this->hasMany(TicketHistory::class)->orderBy('created_at', 'asc');
+    }
+
     public function replies()
     {
         return $this->hasMany(TicketReply::class);
