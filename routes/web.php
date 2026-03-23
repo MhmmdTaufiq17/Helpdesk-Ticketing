@@ -41,7 +41,7 @@ Route::get('/track/{ticket_code}', [TicketTrackController::class, 'showTrackResu
 
 
     // View ticket details tanpa login (dengan code)
-    Route::get('/view/{ticket_code}', [TicketTrackController::class, 'showPublic'])->name('show');
+Route::get('/view/{ticket_code}', [TicketTrackController::class, 'showTrackResult'])->name('show');
 });
 
 // Static Pages (Optional)

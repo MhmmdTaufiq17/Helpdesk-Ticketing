@@ -427,36 +427,55 @@
                 </div>
                 <div class="card-body">
                     <div class="timeline">
-                        <div class="tl-item">
-                            <div class="tl-dot ok">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </div>
-                            <div class="tl-body">
-                                <div class="tl-title">Tiket Dibuat</div>
-                                <div class="tl-desc">Tiket masuk ke sistem dan menunggu penanganan tim support</div>
-                                <div class="tl-time">{{ $ticket->created_at->format('d M Y, H:i') }}</div>
-                            </div>
-                        </div>
-                        <div class="tl-item">
-                            <div class="tl-dot {{ $sk === 'closed' ? 'done' : 'active' }}">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $sico }}"/>
-                                </svg>
-                            </div>
-                            <div class="tl-body">
-                                <div class="tl-title">Status: {{ $slbl }}</div>
-                                <div class="tl-desc">
-                                    @if($sk === 'open') Menunggu ditangani oleh tim support
-                                    @elseif($sk === 'in_progress') Tim sedang menganalisis dan mengerjakan solusi
-                                    @else Tiket telah diselesaikan dan ditutup
-                                    @endif
+                        @php
+                            $dotClass = ['open'=>'active','in_progress'=>'active','closed'=>'done'];
+                            $icons = [
+                                'open'        => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+                                'in_progress' => 'M13 10V3L4 14h7v7l9-11h-7z',
+                                'closed'      => 'M5 13l4 4L19 7',
+                            ];
+                            $notes = [
+                                'open'        => 'Tiket masuk dan menunggu penanganan tim support',
+                                'in_progress' => 'Tim sedang menganalisis dan mengerjakan solusi',
+                                'closed'      => 'Tiket telah diselesaikan dan ditutup',
+                            ];
+                        @endphp
+
+                        @foreach($ticket->histories as $i => $history)
+                            @php
+                                $hsk  = strtolower($history->status);
+                                $hlbl = ['open'=>'Open','in_progress'=>'In Progress','closed'=>'Closed'][$hsk] ?? ucfirst($hsk);
+                                $isLast = $loop->last;
+                            @endphp
+                            <div class="tl-item">
+                                <div class="tl-dot {{ $isLast ? ($hsk === 'closed' ? 'done' : 'active') : 'ok' }}">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        @if(!$isLast)
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        @else
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icons[$hsk] ?? $icons['open'] }}"/>
+                                        @endif
+                                    </svg>
                                 </div>
-                                <div class="tl-time">{{ $ticket->updated_at->format('d M Y, H:i') }}</div>
+                                <div class="tl-body">
+                                    <div class="tl-title">
+                                        @if($loop->first)
+                                            Tiket Dibuat
+                                        @else
+                                            Status diubah → {{ $hlbl }}
+                                        @endif
+                                    </div>
+                                    <div class="tl-desc">
+                                        {{ $history->note ?? $notes[$hsk] ?? '' }}
+                                        @if($history->changed_by && $history->changed_by !== 'System')
+                                            <span style="color:var(--accent);font-weight:600"> · {{ $history->changed_by }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="tl-time">{{ $history->created_at->format('d M Y, H:i') }}</div>
+                                </div>
                             </div>
+                        @endforeach
                         </div>
-                    </div>
                 </div>
             </div>
 
