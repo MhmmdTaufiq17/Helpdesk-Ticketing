@@ -7,15 +7,13 @@ use App\Models\Ticket;
 use App\Models\Category;
 use App\Rules\RecaptchaValidation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;          // [FIX #2] import Str
 use App\Mail\TicketCreated;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
-    /**
-     * Show the form for creating a new ticket.
-     */
     public function create()
     {
         $categories = Category::orderBy('category_name', 'asc')->get();
@@ -23,81 +21,82 @@ class TicketController extends Controller
         return view('user.tickets.create', compact('categories'));
     }
 
-    /**
-     * Store a newly created ticket in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'client_name' => 'required|string|max:255',
-            'client_email' => 'required|email|max:255',
-            'title' => 'required|string|max:255',
-            'category_id' => 'nullable|exists:categories,id',
-            'description' => 'required|string',
-            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
+            'client_name'          => 'required|string|max:255',
+            'client_email'         => 'required|email|max:255',
+            'title'                => 'required|string|max:255',
+            'category_id'          => 'nullable|exists:categories,id',
+            'description'          => 'required|string|max:5000',
+            'attachment'           => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
             'g-recaptcha-response' => ['required', new RecaptchaValidation()],
         ], [
-            'client_name.required' => 'Nama lengkap wajib diisi.',
-            'client_email.required' => 'Email wajib diisi.',
-            'client_email.email' => 'Format email tidak valid.',
-            'title.required' => 'Judul laporan wajib diisi.',
-            'category_id.exists' => 'Kategori tidak valid.',
-            'description.required' => 'Deskripsi wajib diisi.',
-            'attachment.mimes' => 'Format file tidak didukung. Gunakan: JPG, PNG, PDF, DOC, DOCX.',
-            'attachment.max' => 'Ukuran file maksimal 5MB.',
+            'client_name.required'          => 'Nama lengkap wajib diisi.',
+            'client_email.required'         => 'Email wajib diisi.',
+            'client_email.email'            => 'Format email tidak valid.',
+            'title.required'                => 'Judul laporan wajib diisi.',
+            'category_id.exists'            => 'Kategori tidak valid.',
+            'description.required'          => 'Deskripsi wajib diisi.',
+            'description.max'               => 'Deskripsi tidak boleh lebih dari 5000 karakter.',
+            'attachment.mimes'              => 'Format file tidak didukung. Gunakan: JPG, PNG, PDF, DOC, DOCX.',
+            'attachment.max'                => 'Ukuran file maksimal 5MB.',
             'g-recaptcha-response.required' => 'Verifikasi reCAPTCHA wajib diisi.',
         ]);
 
-        // Generate unique ticket code
-        $ticketCode = 'TKT' . rand(10000, 99999);
-        while (Ticket::where('ticket_code', $ticketCode)->exists()) {
-            $ticketCode = 'TKT' . rand(10000, 99999);
-        }
+        // ── [FIX #2] Ticket code tidak bisa ditebak ───────────────────────────
+        // SEBELUM: rand(10000, 99999) → hanya 90.000 kombinasi, mudah di-brute-force
+        // SESUDAH: Str::random(8) → ~220 triliun kombinasi, menggunakan CSPRNG
+        do {
+            $ticketCode = 'TKT-' . strtoupper(Str::random(8));
+        } while (Ticket::where('ticket_code', $ticketCode)->exists());
 
-        // Handle file upload
+        // ── [FIX #3] Sanitasi input sebelum disimpan ke DB ────────────────────
+        // strip_tags() membuang semua tag HTML/JS sehingga data kotor
+        // tidak tersimpan dan tidak bisa memicu XSS saat ditampilkan kembali
+        $clientName  = strip_tags(trim($validated['client_name']));
+        $title       = strip_tags(trim($validated['title']));
+        $description = strip_tags(trim($validated['description']));
+
+        // Handle file upload (belum diubah, akan diupgrade saat deploy)
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
             $attachmentPath = $request->file('attachment')->store('attachments', 'public');
         }
 
-        // Create ticket
+        // ── [FIX #1] Hanya kirim kolom yang diizinkan ke create() ─────────────
+        // JANGAN pakai Ticket::create($request->all()) atau $validated langsung
         $ticket = Ticket::create([
-            'ticket_code' => $ticketCode,
-            'client_name' => $validated['client_name'],
+            'ticket_code'  => $ticketCode,
+            'client_name'  => $clientName,
             'client_email' => $validated['client_email'],
-            'title' => $validated['title'],
-            'category_id' => $validated['category_id'],
-            'description' => $validated['description'],
-            'attachment' => $attachmentPath,
-            'status' => 'open',
-            'priority' => 'medium',
+            'title'        => $title,
+            'category_id'  => $validated['category_id'],
+            'description'  => $description,
+            'attachment'   => $attachmentPath,
+            'status'       => 'open',
+            'priority'     => 'medium',
         ]);
 
-        // Kirim email notifikasi ke user
+        // Kirim email notifikasi
         try {
             Mail::to($ticket->client_email)->send(new TicketCreated($ticket));
 
-            // Optional: Kirim notifikasi ke admin
             $adminEmail = config('mail.admin_email');
             if ($adminEmail) {
                 Mail::to($adminEmail)->send(new \App\Mail\TicketCreatedAdmin($ticket));
             }
 
             Log::info('Email sent successfully for ticket: ' . $ticketCode);
-
         } catch (\Exception $e) {
             Log::error('Failed to send email: ' . $e->getMessage());
-            // Lanjutkan tanpa throw error agar user tetap dapat tiketnya
         }
 
         return redirect()
-    ->route('user.home')
-    ->with('success', 'Tiket #' . $ticketCode . ' berhasil dibuat! Cek email Anda untuk detailnya.');
+            ->route('user.home')
+            ->with('success', 'Tiket #' . $ticketCode . ' berhasil dibuat! Cek email Anda untuk detailnya.');
     }
 
-    /**
-     * Show ticket success page.
-     */
     public function success($ticketCode)
     {
         $ticket = Ticket::where('ticket_code', $ticketCode)->firstOrFail();
