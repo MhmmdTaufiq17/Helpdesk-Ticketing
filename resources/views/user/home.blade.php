@@ -520,7 +520,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const form      = document.getElementById('ticketForm');
     const submitBtn = document.getElementById('submitBtn');
+    const descTA    = document.getElementById('description');
+    const descCount = document.getElementById('descCount');
+    const fileInput = document.getElementById('attachment');
+    const notif     = document.getElementById('fileNotification');
 
+    // ── Submit ──
     form?.addEventListener('submit', function (e) {
         if (typeof grecaptcha === 'undefined' || !grecaptcha.getResponse()) {
             e.preventDefault();
@@ -529,37 +534,37 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;animation:spin 1s linear infinite"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Mengirim…`;
+            submitBtn.innerHTML = `
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                     style="width:16px;height:16px;animation:spin 1s linear infinite">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg> Mengirim…`;
         }
     });
-    const descTA    = document.getElementById('description');
-const descCount = document.getElementById('descCount');
 
-function updateCounter() {
-    const len = descTA.value.length;
-    descCount.textContent = len.toLocaleString('id-ID');
-    // ubah warna saat mendekati/melebihi batas
-    descCount.style.color = len >= 5000 ? 'var(--red)' : len >= 4500 ? 'var(--yellow)' : '';
-}
+    // ── Char counter ──
+    function updateCounter() {
+        const len = descTA.value.length;
+        descCount.textContent = len.toLocaleString('id-ID');
+        descCount.style.color = len >= 5000 ? 'var(--red)' : len >= 4500 ? 'var(--yellow)' : '';
+    }
+    descTA?.addEventListener('input', updateCounter);
+    updateCounter();
 
-descTA?.addEventListener('input', updateCounter);
-updateCounter(); // inisialisasi saat ada old() value
-    const fileInput = document.getElementById('attachment');
-    const notif     = document.getElementById('fileNotification');
-
+    // ── File notif ──
     function showNotif(type, title, sub) {
         const icon = type === 'success'
             ? `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`
             : `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
-        notif.className    = type;
+        notif.className     = type;
         notif.style.display = 'flex';
-        // FIXED: pakai textContent agar nama file tidak bisa inject HTML
-        notif.innerHTML = `${icon}<div class="fn-body"></div>`;
+        notif.innerHTML     = `${icon}<div class="fn-body"></div>`;
         const body   = notif.querySelector('.fn-body');
         const strong = document.createElement('strong');
+        const span   = document.createElement('span');
         strong.textContent = title;
-        const span = document.createElement('span');
-        span.textContent = sub;
+        span.textContent   = sub;
         body.appendChild(strong);
         body.appendChild(span);
         if (type === 'error') setTimeout(() => notif.style.display = 'none', 5000);
