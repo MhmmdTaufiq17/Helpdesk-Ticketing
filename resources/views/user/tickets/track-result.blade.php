@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.user.app')
 
 @section('title', 'Status Tiket #' . $ticket->ticket_code)
 

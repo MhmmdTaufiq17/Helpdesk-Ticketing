@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Login — Admin Helpdesk</title>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -256,18 +257,6 @@
         }
         .login-footer-text strong { color: var(--ink-2); font-weight: 600; }
 
-        /* Alert */
-        .alert {
-            display: flex; align-items: flex-start; gap: 10px;
-            padding: 11px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 12.5px; font-weight: 500;
-            margin-bottom: 20px;
-            border: 1px solid;
-        }
-        .alert svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; }
-        .alert-danger { background: var(--red-soft); color: #b91c1c; border-color: #fecaca; }
-
         /* Security badge */
         .security-badge {
             display: flex; align-items: center; gap: 6px;
@@ -306,30 +295,8 @@
         <h1 class="login-title">Selamat datang kembali</h1>
         <p class="login-subtitle">Masuk ke panel admin untuk mengelola tiket.</p>
 
-        {{-- Error alert --}}
-        @if($errors->any())
-            <div class="alert alert-danger" role="alert">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span>{{ $errors->first() }}</span>
-            </div>
-        @endif
-
-        {{-- Session error --}}
-        @if(session('error'))
-            <div class="alert alert-danger" role="alert">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span>{{ session('error') }}</span>
-            </div>
-        @endif
-
         {{-- Form --}}
-        <form method="POST" action="{{ route('admin.login') }}">
+        <form method="POST" action="{{ route('admin.login') }}" id="loginForm">
             @csrf
 
             {{-- Email --}}
@@ -454,9 +421,54 @@
         passInput.type = isPass ? 'text' : 'password';
         eyeIcon.innerHTML = isPass ? eyeClosed : eyeOpen;
     });
+
+    // SweetAlert untuk menampilkan pesan
+    document.addEventListener('DOMContentLoaded', function() {
+        // Pesan session timeout
+        @if(session('session_timeout'))
+            Toast.fire({
+                icon: 'warning',
+                title: 'Sesi Berakhir',
+                text: 'Anda telah logout karena tidak ada aktivitas selama 5 menit.',
+                timer: 5000
+            });
+        @endif
+
+        // Pesan error login
+        @if(session('error'))
+            Toast.fire({
+                icon: 'error',
+                title: 'Login Gagal',
+                text: '{{ session('error') }}',
+                timer: 4000
+            });
+        @endif
+
+        // Pesan error validasi form
+        @if($errors->any())
+            Toast.fire({
+                icon: 'error',
+                title: 'Validasi Gagal',
+                text: '{{ $errors->first() }}',
+                timer: 4000
+            });
+        @endif
+
+        // Pesan success (jika ada)
+        @if(session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: '{{ session('success') }}',
+                timer: 3000
+            });
+        @endif
+    });
+
+    // NProgress
     document.querySelector('form').addEventListener('submit', function() {
-    NProgress.start();
-});
+        NProgress.start();
+    });
 </script>
 </body>
 </html>

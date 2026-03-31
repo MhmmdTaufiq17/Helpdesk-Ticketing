@@ -12,15 +12,17 @@ class CheckSessionTimeout
     {
         if (Auth::check()) {
             $lastActivity = session('last_activity');
-            $timeout = 300; // 5 minutes in seconds
+            $timeout = 300; // 5 minutes
 
             if ($lastActivity && (time() - $lastActivity > $timeout)) {
                 Auth::logout();
                 session()->invalidate();
                 session()->regenerateToken();
 
-                return redirect()->route('admin.login')
-                    ->with('message', 'Sesi Anda telah berakhir karena tidak ada aktivitas.');
+                // Set flag untuk SweetAlert
+                session()->flash('session_timeout', true);
+
+                return redirect()->route('admin.login');
             }
 
             session(['last_activity' => time()]);

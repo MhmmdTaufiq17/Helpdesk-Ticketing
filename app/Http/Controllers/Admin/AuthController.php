@@ -24,6 +24,10 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
+
+            // TAMBAHKAN INI - Set last activity saat login
+            session(['last_activity' => time()]);
+
             return redirect()->intended(route('admin.dashboard'));
         }
 
