@@ -33,16 +33,18 @@ class TicketTrackController extends Controller
         return redirect()->route('user.tickets.track.result', $ticket->ticket_code);
     }
 
-    public function showTrackResult($ticket_code)
-    {
-        $ticketCode = strtoupper(trim($ticket_code));
+public function showTrackResult($ticket_code)
+{
+    $ticketCode = strtoupper(trim($ticket_code));
 
-        $ticket = Ticket::with(['category', 'histories'])
-                        ->where('ticket_code', $ticketCode)
-                        ->firstOrFail();
+    $ticket = Ticket::with(['category', 'histories', 'replies' => function($query) {
+                        $query->where('sender_type', 'admin'); // Hanya balasan admin
+                    }, 'replies.user'])
+                    ->where('ticket_code', $ticketCode)
+                    ->firstOrFail();
 
-        return view('user.tickets.track-result', compact('ticket'));
-    }
+    return view('user.tickets.track-result', compact('ticket'));
+}
 
     public function trackAjax(Request $request)
     {

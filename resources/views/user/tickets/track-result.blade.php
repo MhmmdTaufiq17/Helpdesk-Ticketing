@@ -25,14 +25,12 @@
         --shadow:     0 2px 1px rgba(0,0,0,.02), 0 8px 32px rgba(0,0,0,.06);
     }
 
-    /* PAGE */
     .page {
         max-width: 1100px;
         margin: 0 auto;
         padding: 36px 24px 80px;
     }
 
-    /* BREADCRUMB */
     .breadcrumb {
         display: flex; align-items: center; gap: 6px;
         font-size: 12.5px; color: var(--ink-3);
@@ -44,7 +42,6 @@
     .breadcrumb svg { width: 13px; height: 13px; }
     .breadcrumb .cur { color: var(--ink); font-weight: 600; font-family: 'DM Mono', monospace; }
 
-    /* HERO */
     .hero {
         background: var(--surface);
         border-radius: 20px;
@@ -84,7 +81,6 @@
 
     .hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
 
-    /* Badge */
     .badge {
         display: inline-flex; align-items: center; gap: 7px;
         padding: 7px 16px; border-radius: 30px;
@@ -102,7 +98,6 @@
 
     .hero-ts { font-size: 12px; color: var(--ink-3); }
 
-    /* HERO BOTTOM — stat strip */
     .hero-stats {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -122,7 +117,6 @@
         .hero-stat:nth-child(3) { border-top: 1px solid var(--surface-3); }
     }
 
-    /* LAYOUT */
     .layout {
         display: grid;
         grid-template-columns: 1fr 300px;
@@ -136,7 +130,6 @@
     .col-main { display: flex; flex-direction: column; gap: 20px; }
     .col-side  { display: flex; flex-direction: column; gap: 16px; }
 
-    /* CARD */
     .card {
         background: var(--surface);
         border-radius: var(--radius);
@@ -159,7 +152,6 @@
     .card-head-title { font-size: 13.5px; font-weight: 700; color: var(--ink); }
     .card-body { padding: 20px 22px; }
 
-    /* FIELD */
     .field { margin-bottom: 20px; }
     .field:last-child { margin-bottom: 0; }
     .field-lbl {
@@ -179,7 +171,6 @@
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
 
-    /* Pill tags */
     .pill {
         display: inline-flex; align-items: center;
         padding: 4px 13px; border-radius: 20px;
@@ -191,7 +182,6 @@
     .pill.medium { background: var(--yellow-soft); color: #92400e; }
     .pill.high   { background: var(--red-soft); color: var(--red); }
 
-    /* TIMELINE */
     .timeline { display: flex; flex-direction: column; }
     .tl-item  { display: flex; gap: 14px; position: relative; }
     .tl-item:not(:last-child)::after {
@@ -215,7 +205,6 @@
     .tl-desc  { font-size: 12px; color: var(--ink-3); margin-top: 2px; line-height: 1.5; }
     .tl-time  { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-3); margin-top: 5px; }
 
-    /* SIDEBAR META LIST */
     .meta-list { display: flex; flex-direction: column; }
     .meta-row {
         display: flex; align-items: center; justify-content: space-between;
@@ -227,7 +216,6 @@
     .meta-k { font-size: 12px; color: var(--ink-3); flex-shrink: 0; }
     .meta-v { font-size: 12.5px; font-weight: 600; color: var(--ink); text-align: right; word-break: break-all; }
 
-    /* ACTION BUTTONS */
     .actions { display: flex; flex-direction: column; gap: 10px; }
     .btn {
         display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -248,7 +236,6 @@
     }
     .btn.outline:hover { background: var(--surface-2); border-color: var(--ink-3); color: var(--ink); }
 
-    /* HELP CARD */
     .help-card {
         border-radius: var(--radius);
         background: var(--accent-soft);
@@ -269,7 +256,6 @@
     .help-link:hover { background: #e5e5ff; }
     .help-link svg { width: 13px; height: 13px; }
 
-    /* INFO STRIP */
     .info-strip {
         display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
         margin-top: 24px;
@@ -295,7 +281,6 @@
     .info-tile-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
     .info-tile-text  { font-size: 12px; color: var(--ink-3); line-height: 1.5; }
 
-    /* ANIMATIONS */
     @keyframes up {
         from { opacity:0; transform:translateY(18px); }
         to   { opacity:1; transform:translateY(0); }
@@ -303,6 +288,14 @@
     .hero    { animation: up .38s .04s ease both; }
     .layout  { animation: up .38s .1s ease both; }
     .info-strip { animation: up .38s .18s ease both; }
+
+    /* Reply Styles */
+    .reply-item {
+        transition: all 0.2s ease;
+    }
+    .reply-item:hover {
+        transform: translateX(4px);
+    }
 </style>
 
 @php
@@ -376,9 +369,10 @@
     {{-- Main layout --}}
     <div class="layout">
 
-        {{-- Left: detail + timeline --}}
+        {{-- Left: detail + replies + timeline --}}
         <div class="col-main">
 
+            {{-- Detail Tiket Card --}}
             <div class="card">
                 <div class="card-head">
                     <div class="card-head-ico">
@@ -415,6 +409,78 @@
                 </div>
             </div>
 
+            {{-- BALASAN ADMIN --}}
+            @if($ticket->replies && $ticket->replies->count() > 0)
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-head-ico">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        </svg>
+                    </div>
+                    <span class="card-head-title">Balasan Admin</span>
+                </div>
+                <div class="card-body">
+                    <div class="space-y-4">
+                        @foreach($ticket->replies as $reply)
+                            @if($reply->sender_type === 'admin')
+                            <div class="reply-item" style="background: #f5f3ff; border-left: 4px solid #5b5ef4; border-radius: 12px; padding: 16px; transition: all 0.2s ease;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 40px; height: 40px; background: #e0e7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                            <svg style="width: 20px; height: 20px; color: #5b5ef4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p style="font-weight: 700; color: #1f2937; font-size: 14px; margin: 0;">
+                                                {{ $reply->user ? $reply->user->name : 'Admin' }}
+                                            </p>
+                                            <p style="font-size: 11px; color: #9ca3af; font-family: monospace; margin: 4px 0 0 0;">
+                                                {{ $reply->created_at->format('d M Y, H:i') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span style="padding: 4px 12px; background: #5b5ef4; color: white; border-radius: 20px; font-size: 11px; font-weight: 600;">
+                                        Admin
+                                    </span>
+                                </div>
+                                <div style="color: #374151; font-size: 14px; line-height: 1.6; white-space: pre-line; padding-left: 52px;">
+                                    {{ $reply->message }}
+                                </div>
+                            </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @else
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-head-ico">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        </svg>
+                    </div>
+                    <span class="card-head-title">Balasan Admin</span>
+                </div>
+                <div class="card-body">
+                    <div style="text-align: center; padding: 32px 16px;">
+                        <svg style="width: 48px; height: 48px; color: #d1d5db; margin: 0 auto 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        <p style="color: #6b7280; font-size: 14px; margin: 0;">Belum ada balasan dari admin</p>
+                        <p style="color: #9ca3af; font-size: 12px; margin-top: 8px;">Admin akan membalas tiket Anda segera</p>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- Riwayat Status Card --}}
             <div class="card">
                 <div class="card-head">
                     <div class="card-head-ico">
@@ -428,7 +494,6 @@
                 <div class="card-body">
                     <div class="timeline">
                         @php
-                            $dotClass = ['open'=>'active','in_progress'=>'active','closed'=>'done'];
                             $icons = [
                                 'open'        => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
                                 'in_progress' => 'M13 10V3L4 14h7v7l9-11h-7z',
@@ -475,7 +540,7 @@
                                 </div>
                             </div>
                         @endforeach
-                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -523,7 +588,7 @@
                 </div>
                 <div class="card-body">
                     <div class="actions">
-                        <a href="{{ route('user.home') }}" class="btn accent">
+                        <a href="{{ route('user.tickets.create') }}" class="btn accent">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>

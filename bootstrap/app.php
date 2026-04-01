@@ -14,15 +14,13 @@ return Application::configure(basePath: dirname(__DIR__))
         // Register custom middleware alias
         $middleware->alias([
             'session.timeout' => \App\Http\Middleware\CheckSessionTimeout::class,
-            'admin.auth' => \App\Http\Middleware\AdminAuthenticate::class, // jika mau buat middleware khusus admin
+            'admin' => \App\Http\Middleware\AdminAuthenticate::class, // TAMBAHKAN INI
         ]);
 
         // Add middleware to web group
         $middleware->web(append: [
-            \App\Http\Middleware\CheckSessionTimeout::class, // untuk semua web routes
+            \App\Http\Middleware\CheckSessionTimeout::class,
         ]);
-
-        // Atau jika hanya untuk admin routes saja, bisa di route
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Handle exceptions here

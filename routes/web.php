@@ -21,24 +21,20 @@ use App\Http\Controllers\Admin\DashboardController;
 //  PUBLIC — User Routes
 // ──────────────────────────────────────────────
 
-// Root
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/home', [HomeController::class, 'index'])->name('user.home');
 
-// Tickets (tidak perlu login)
 Route::prefix('tickets')->name('user.tickets.')->group(function () {
-    Route::get('/create', [TicketController::class, 'create'])->name('create');
-    Route::post('/store', [TicketController::class, 'store'])->name('store');
+    Route::get('/create',                [TicketController::class, 'create'])->name('create');
+    Route::post('/store',                [TicketController::class, 'store'])->name('store');
     Route::get('/success/{ticket_code}', [TicketController::class, 'success'])->name('success');
-
-    Route::get('/track', [TicketTrackController::class, 'showTrackForm'])->name('track.form');
-    Route::post('/track', [TicketTrackController::class, 'track'])->name('track');
-    Route::post('/track/search', [TicketTrackController::class, 'trackAjax'])->name('track.do');
+    Route::get('/track',               [TicketTrackController::class, 'showTrackForm'])->name('track.form');
+    Route::post('/track',              [TicketTrackController::class, 'track'])->name('track');
+    Route::post('/track/search',       [TicketTrackController::class, 'trackAjax'])->name('track.do');
     Route::get('/track/{ticket_code}', [TicketTrackController::class, 'showTrackResult'])->name('track.result');
-    Route::get('/view/{ticket_code}', [TicketTrackController::class, 'showTrackResult'])->name('show');
+    Route::get('/view/{ticket_code}',  [TicketTrackController::class, 'showTrackResult'])->name('show');
 });
 
-// Static Pages
 Route::prefix('pages')->name('pages.')->group(function () {
     Route::get('/about',   fn() => view('pages.about'))->name('about');
     Route::get('/contact', fn() => view('pages.contact'))->name('contact');
@@ -52,30 +48,27 @@ Route::prefix('pages')->name('pages.')->group(function () {
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    // ── Guest only (belum login) ──
+    // Guest only
     Route::middleware('guest')->group(function () {
         Route::get('/login',  [AuthController::class, 'showLogin'])->name('login');
-        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     });
 
-    // ── Authenticated only (sudah login) ──
-    Route::middleware('auth')->group(function () {
+    // Auth + Admin role
+    Route::middleware(['auth', 'admin'])->group(function () {
 
-        // Logout
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-        // Redirect /admin → /admin/dashboard
         Route::get('/', fn() => redirect()->route('admin.dashboard'));
-
-        // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Tiket
         Route::prefix('tickets')->name('tickets.')->group(function () {
-            Route::get('/',       [AdminTicketController::class, 'index'])->name('index');
-            Route::get('/search', [AdminTicketController::class, 'search'])->name('search');
-            Route::get('/{id}',   [AdminTicketController::class, 'show'])->name('show');
+            Route::get('/',              [AdminTicketController::class, 'index'])->name('index');
+            Route::get('/search',        [AdminTicketController::class, 'search'])->name('search');
+            Route::get('/{id}',          [AdminTicketController::class, 'show'])->name('show');
             Route::patch('/{id}/status', [AdminTicketController::class, 'updateStatus'])->name('update-status');
+            Route::post('/{id}/reply',   [AdminTicketController::class, 'reply'])->name('reply');
+            Route::delete('/{id}',       [AdminTicketController::class, 'destroy'])->name('destroy');
         });
 
         // Laporan
@@ -86,14 +79,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Profil Admin
         Route::prefix('profile')->name('profile.')->group(function () {
-            Route::get('/edit',  [ProfileController::class, 'edit'])->name('edit');
-            Route::patch('/',    [ProfileController::class, 'update'])->name('update');
+            Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+            Route::patch('/',   [ProfileController::class, 'update'])->name('update');
         });
 
         // Pengaturan
         Route::prefix('settings')->name('settings.')->group(function () {
-            Route::get('/',   [SettingController::class, 'index'])->name('index');
-            Route::post('/',  [SettingController::class, 'update'])->name('update');
+            Route::get('/',  [SettingController::class, 'index'])->name('index');
+            Route::post('/', [SettingController::class, 'update'])->name('update');
         });
     });
 });

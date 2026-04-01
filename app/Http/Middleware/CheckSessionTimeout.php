@@ -12,7 +12,7 @@ class CheckSessionTimeout
     {
         if (Auth::check()) {
             $lastActivity = session('last_activity');
-            $timeout = 300; // 5 minutes
+            $timeout = 298; // 5 minutes
 
             if ($lastActivity && (time() - $lastActivity > $timeout)) {
                 Auth::logout();

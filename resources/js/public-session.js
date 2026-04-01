@@ -1,6 +1,7 @@
 // resources/js/public-session.js
 let lastActivity = Date.now();
-const SESSION_TIMEOUT = 10 * 1000; // 5 menit
+const SESSION_TIMEOUT = 60 * 5 * 1000;
+// const SESSION_TIMEOUT = 10 * 1000; // 5 menit
 let timeoutId;
 
 function resetTimer() {
