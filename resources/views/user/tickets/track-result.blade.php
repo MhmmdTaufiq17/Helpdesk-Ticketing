@@ -3,677 +3,562 @@
 @section('title', 'Status Tiket #' . $ticket->ticket_code)
 
 @section('content')
-<style>
-    :root {
-        --ink:        #0f0f12;
-        --ink-2:      #3a3a4a;
-        --ink-3:      #8a8a9a;
-        --surface:    #ffffff;
-        --surface-2:  #f5f5f7;
-        --surface-3:  #ebebef;
-        --accent:     #5b5ef4;
-        --accent-2:   #7b7ef7;
-        --accent-soft:#eeeeff;
-        --green:      #22c55e;
-        --green-soft: #f0fdf4;
-        --yellow:     #f59e0b;
-        --yellow-soft:#fffbeb;
-        --red:        #ef4444;
-        --red-soft:   #fff5f5;
-        --radius:     16px;
-        --radius-sm:  10px;
-        --shadow:     0 2px 1px rgba(0,0,0,.02), 0 8px 32px rgba(0,0,0,.06);
-    }
+    <style>
+        /* Animasi kustom yang tidak tersedia secara default di Tailwind */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
 
-    .page {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 36px 24px 80px;
-    }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .breadcrumb {
-        display: flex; align-items: center; gap: 6px;
-        font-size: 12.5px; color: var(--ink-3);
-        margin-bottom: 28px;
-        animation: up .35s ease both;
-    }
-    .breadcrumb a { color: var(--accent); text-decoration: none; font-weight: 500; }
-    .breadcrumb a:hover { text-decoration: underline; }
-    .breadcrumb svg { width: 13px; height: 13px; }
-    .breadcrumb .cur { color: var(--ink); font-weight: 600; font-family: 'DM Mono', monospace; }
+        @keyframes blinkDot {
 
-    .hero {
-        background: var(--surface);
-        border-radius: 20px;
-        border: 1px solid var(--surface-3);
-        padding: 0;
-        margin-bottom: 24px;
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        animation: up .38s .04s ease both;
-    }
-    .hero-top {
-        padding: 28px 32px;
-        display: flex; align-items: center; justify-content: space-between;
-        gap: 20px; flex-wrap: wrap;
-        border-bottom: 1px solid var(--surface-3);
-    }
-    .hero-left { display: flex; align-items: center; gap: 18px; }
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
 
-    .status-ring {
-        width: 56px; height: 56px; flex-shrink: 0;
-        border-radius: 16px;
-        display: flex; align-items: center; justify-content: center;
-        position: relative;
-    }
-    .status-ring svg { width: 26px; height: 26px; }
-    .status-ring.open        { background: #eff6ff; color: #2563eb; box-shadow: 0 0 0 6px rgba(37,99,235,.08); }
-    .status-ring.in_progress { background: var(--yellow-soft); color: var(--yellow); box-shadow: 0 0 0 6px rgba(245,158,11,.08); }
-    .status-ring.closed      { background: var(--surface-2); color: var(--ink-3); }
+            50% {
+                opacity: 0.4;
+                transform: scale(1.4);
+            }
+        }
 
-    .hero-code {
-        font-family: 'DM Mono', monospace;
-        font-size: 24px; font-weight: 700;
-        color: var(--ink); letter-spacing: -.5px;
-        margin: 0 0 5px;
-    }
-    .hero-title { font-size: 14px; color: var(--ink-3); margin: 0; max-width: 420px; }
+        .animate-fade-up {
+            animation: fadeUp 0.38s ease both;
+        }
 
-    .hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        .animate-blink {
+            animation: blinkDot 1.4s infinite;
+        }
 
-    .badge {
-        display: inline-flex; align-items: center; gap: 7px;
-        padding: 7px 16px; border-radius: 30px;
-        font-size: 13px; font-weight: 700;
-    }
-    .badge-dot { width: 7px; height: 7px; border-radius: 50%; }
-    .badge.open        { background: #dbeafe; color: #1d4ed8; }
-    .badge.open .badge-dot { background: #1d4ed8; animation: blink 1.4s infinite; }
-    .badge.in_progress { background: var(--yellow-soft); color: #92400e; }
-    .badge.in_progress .badge-dot { background: var(--yellow); animation: blink 1.4s infinite; }
-    .badge.closed      { background: var(--surface-2); color: var(--ink-2); }
-    .badge.closed .badge-dot { background: var(--ink-3); }
+        .delay-40 {
+            animation-delay: 0.04s;
+        }
 
-    @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+        .delay-100 {
+            animation-delay: 0.10s;
+        }
 
-    .hero-ts { font-size: 12px; color: var(--ink-3); }
+        .delay-180 {
+            animation-delay: 0.18s;
+        }
+    </style>
 
-    .hero-stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        divide-x: 1px solid var(--surface-3);
-    }
-    .hero-stat {
-        padding: 16px 24px;
-        border-right: 1px solid var(--surface-3);
-    }
-    .hero-stat:last-child { border-right: none; }
-    .hero-stat-label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
-    .hero-stat-val   { font-size: 14px; font-weight: 600; color: var(--ink); }
-    .hero-stat-val.mono { font-family: 'DM Mono', monospace; font-size: 13px; }
-    @media (max-width: 640px) {
-        .hero-stats { grid-template-columns: 1fr 1fr; }
-        .hero-stat:nth-child(2) { border-right: none; }
-        .hero-stat:nth-child(3) { border-top: 1px solid var(--surface-3); }
-    }
+    @php
+        $sk = strtolower($ticket->status);
+        $slbl = ['open' => 'Open', 'in_progress' => 'In Progress', 'closed' => 'Closed'][$sk] ?? ucfirst($sk);
+        $sico =
+            [
+                'open' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+                'in_progress' => 'M13 10V3L4 14h7v7l9-11h-7z',
+                'closed' => 'M6 18L18 6M6 6l12 12',
+            ][$sk] ?? 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z';
 
-    .layout {
-        display: grid;
-        grid-template-columns: 1fr 300px;
-        gap: 24px;
-        align-items: start;
-    }
-    @media (max-width: 720px) {
-        .layout { grid-template-columns: 1fr; }
-    }
+        // Tailwind Class Mappings
+        $ringMap = [
+            'open' => 'bg-blue-50 text-blue-600 ring-[6px] ring-blue-600/10',
+            'in_progress' => 'bg-amber-50 text-amber-500 ring-[6px] ring-amber-500/10',
+            'closed' => 'bg-slate-100 text-slate-400',
+        ];
+        $badgeMap = [
+            'open' => 'bg-blue-100 text-blue-700',
+            'in_progress' => 'bg-amber-50 text-amber-800',
+            'closed' => 'bg-slate-100 text-slate-600',
+        ];
+        $dotMap = [
+            'open' => 'bg-blue-700 animate-blink',
+            'in_progress' => 'bg-amber-500 animate-blink',
+            'closed' => 'bg-slate-400',
+        ];
+        $priMap = [
+            'low' => ['cls' => 'bg-green-50 text-green-800', 'lbl' => 'Low'],
+            'medium' => ['cls' => 'bg-amber-50 text-amber-800', 'lbl' => 'Medium'],
+            'high' => ['cls' => 'bg-red-50 text-red-500', 'lbl' => 'High'],
+        ];
 
-    .col-main { display: flex; flex-direction: column; gap: 20px; }
-    .col-side  { display: flex; flex-direction: column; gap: 16px; }
+        $pri = $priMap[$ticket->priority] ?? $priMap['medium'];
+    @endphp
 
-    .card {
-        background: var(--surface);
-        border-radius: var(--radius);
-        border: 1px solid var(--surface-3);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-    }
-    .card-head {
-        padding: 16px 22px;
-        border-bottom: 1px solid var(--surface-3);
-        display: flex; align-items: center; gap: 10px;
-    }
-    .card-head-ico {
-        width: 30px; height: 30px;
-        background: var(--accent-soft);
-        border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .card-head-ico svg { width: 14px; height: 14px; color: var(--accent); }
-    .card-head-title { font-size: 13.5px; font-weight: 700; color: var(--ink); }
-    .card-body { padding: 20px 22px; }
+    <div class="max-w-[1100px] mx-auto px-6 pt-9 pb-20">
 
-    .field { margin-bottom: 20px; }
-    .field:last-child { margin-bottom: 0; }
-    .field-lbl {
-        font-size: 11px; font-weight: 600;
-        letter-spacing: .5px; text-transform: uppercase;
-        color: var(--ink-3); margin-bottom: 7px;
-    }
-    .field-val { font-size: 14px; color: var(--ink); font-weight: 500; line-height: 1.6; }
-    .field-val.desc {
-        background: var(--surface-2);
-        border-radius: var(--radius-sm);
-        padding: 14px 16px;
-        font-weight: 400; font-size: 13.5px;
-        color: var(--ink-2); white-space: pre-line;
-    }
-
-    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
-
-    .pill {
-        display: inline-flex; align-items: center;
-        padding: 4px 13px; border-radius: 20px;
-        font-size: 12.5px; font-weight: 600;
-    }
-    .pill.cat    { background: var(--accent-soft); color: var(--accent); }
-    .pill.none   { background: var(--surface-2); color: var(--ink-3); }
-    .pill.low    { background: var(--green-soft); color: #166534; }
-    .pill.medium { background: var(--yellow-soft); color: #92400e; }
-    .pill.high   { background: var(--red-soft); color: var(--red); }
-
-    .timeline { display: flex; flex-direction: column; }
-    .tl-item  { display: flex; gap: 14px; position: relative; }
-    .tl-item:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        left: 15px; top: 33px; bottom: 0;
-        width: 1.5px;
-        background: var(--surface-3);
-    }
-    .tl-dot {
-        width: 32px; height: 32px; flex-shrink: 0;
-        border-radius: 50%; z-index: 1; position: relative;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .tl-dot svg { width: 14px; height: 14px; }
-    .tl-dot.ok     { background: var(--green-soft); color: var(--green); }
-    .tl-dot.active { background: var(--accent-soft); color: var(--accent); }
-    .tl-dot.done   { background: var(--surface-2); color: var(--ink-3); }
-    .tl-body { flex: 1; padding-bottom: 22px; padding-top: 5px; }
-    .tl-title { font-size: 13px; font-weight: 600; color: var(--ink); }
-    .tl-desc  { font-size: 12px; color: var(--ink-3); margin-top: 2px; line-height: 1.5; }
-    .tl-time  { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-3); margin-top: 5px; }
-
-    .meta-list { display: flex; flex-direction: column; }
-    .meta-row {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 11px 0; gap: 12px;
-        border-bottom: 1px solid var(--surface-3);
-    }
-    .meta-row:first-child { padding-top: 0; }
-    .meta-row:last-child  { border-bottom: none; padding-bottom: 0; }
-    .meta-k { font-size: 12px; color: var(--ink-3); flex-shrink: 0; }
-    .meta-v { font-size: 12.5px; font-weight: 600; color: var(--ink); text-align: right; word-break: break-all; }
-
-    .actions { display: flex; flex-direction: column; gap: 10px; }
-    .btn {
-        display: flex; align-items: center; justify-content: center; gap: 8px;
-        padding: 11px 16px; border-radius: var(--radius-sm);
-        font-size: 13px; font-weight: 600; font-family: 'Sora', sans-serif;
-        text-decoration: none; border: none; cursor: pointer;
-        transition: all .15s; width: 100%;
-    }
-    .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
-    .btn.accent {
-        background: var(--accent); color: #fff;
-        box-shadow: 0 4px 14px rgba(91,94,244,.3);
-    }
-    .btn.accent:hover { background: #4a4de3; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(91,94,244,.4); }
-    .btn.outline {
-        background: var(--surface); color: var(--ink-2);
-        border: 1.5px solid var(--surface-3);
-    }
-    .btn.outline:hover { background: var(--surface-2); border-color: var(--ink-3); color: var(--ink); }
-
-    .help-card {
-        border-radius: var(--radius);
-        background: var(--accent-soft);
-        border: 1px solid rgba(91,94,244,.15);
-        padding: 20px;
-    }
-    .help-title { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
-    .help-text  { font-size: 12px; color: var(--ink-2); line-height: 1.6; margin-bottom: 14px; }
-    .help-links { display: flex; flex-direction: column; gap: 8px; }
-    .help-link {
-        display: inline-flex; align-items: center; gap: 7px;
-        font-size: 12px; font-weight: 600; color: var(--accent);
-        text-decoration: none; padding: 8px 12px;
-        background: var(--surface); border-radius: 8px;
-        border: 1px solid rgba(91,94,244,.15);
-        transition: background .15s;
-    }
-    .help-link:hover { background: #e5e5ff; }
-    .help-link svg { width: 13px; height: 13px; }
-
-    .info-strip {
-        display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-        margin-top: 24px;
-    }
-    @media (max-width: 640px) { .info-strip { grid-template-columns: 1fr; } }
-    .info-tile {
-        background: var(--surface);
-        border-radius: var(--radius);
-        border: 1px solid var(--surface-3);
-        padding: 18px 18px;
-        display: flex; align-items: flex-start; gap: 12px;
-        box-shadow: var(--shadow);
-    }
-    .info-tile-ico {
-        width: 34px; height: 34px; flex-shrink: 0;
-        border-radius: 9px;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .info-tile-ico svg { width: 16px; height: 16px; }
-    .info-tile-ico.blue   { background: #dbeafe; color: #2563eb; }
-    .info-tile-ico.purple { background: #ede9fe; color: #7c3aed; }
-    .info-tile-ico.green  { background: var(--green-soft); color: #16a34a; }
-    .info-tile-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
-    .info-tile-text  { font-size: 12px; color: var(--ink-3); line-height: 1.5; }
-
-    @keyframes up {
-        from { opacity:0; transform:translateY(18px); }
-        to   { opacity:1; transform:translateY(0); }
-    }
-    .hero    { animation: up .38s .04s ease both; }
-    .layout  { animation: up .38s .1s ease both; }
-    .info-strip { animation: up .38s .18s ease both; }
-
-    /* Reply Styles */
-    .reply-item {
-        transition: all 0.2s ease;
-    }
-    .reply-item:hover {
-        transform: translateX(4px);
-    }
-</style>
-
-@php
-    $sk   = strtolower($ticket->status);
-    $slbl = ['open'=>'Open','in_progress'=>'In Progress','closed'=>'Closed'][$sk] ?? ucfirst($sk);
-    $sico = [
-        'open'        => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-        'in_progress' => 'M13 10V3L4 14h7v7l9-11h-7z',
-        'closed'      => 'M6 18L18 6M6 6l12 12',
-    ][$sk] ?? 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z';
-    $pmap = [
-        'low'    => ['cls'=>'low',    'lbl'=>'Low'],
-        'medium' => ['cls'=>'medium', 'lbl'=>'Medium'],
-        'high'   => ['cls'=>'high',   'lbl'=>'High'],
-    ];
-    $pri = $pmap[$ticket->priority] ?? $pmap['medium'];
-@endphp
-
-<div class="page">
-
-    {{-- Breadcrumb --}}
-    <div class="breadcrumb">
-        <a href="{{ route('user.home') }}">Beranda</a>
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        <span>Lacak Tiket</span>
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        <span class="cur">{{ $ticket->ticket_code }}</span>
-    </div>
-
-    {{-- Hero card --}}
-    <div class="hero">
-        <div class="hero-top">
-            <div class="hero-left">
-                <div class="status-ring {{ $sk }}">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $sico }}"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="hero-code">{{ $ticket->ticket_code }}</p>
-                    <p class="hero-title">{{ $ticket->title }}</p>
-                </div>
-            </div>
-            <div class="hero-right">
-                <span class="badge {{ $sk }}">
-                    <span class="badge-dot"></span>{{ $slbl }}
-                </span>
-                <span class="hero-ts">Diperbarui {{ $ticket->updated_at->format('d M Y, H:i') }}</span>
-            </div>
+        {{-- Breadcrumb --}}
+        <div class="flex items-center gap-1.5 text-[12.5px] text-slate-400 mb-7 animate-fade-up">
+            <a href="{{ route('user.home') }}" class="text-indigo-600 font-medium hover:underline">Beranda</a>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <span>Lacak Tiket</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <span class="text-slate-900 font-semibold font-['DM_Mono',monospace]">{{ $ticket->ticket_code }}</span>
         </div>
-        <div class="hero-stats">
-            <div class="hero-stat">
-                <div class="hero-stat-label">Pelapor</div>
-                <div class="hero-stat-val">{{ $ticket->client_name }}</div>
-            </div>
-            <div class="hero-stat">
-                <div class="hero-stat-label">Prioritas</div>
-                <div class="hero-stat-val">{{ $pri['lbl'] }}</div>
-            </div>
-            <div class="hero-stat">
-                <div class="hero-stat-label">Dibuat</div>
-                <div class="hero-stat-val mono">{{ $ticket->created_at->format('d M Y') }}</div>
-            </div>
-            <div class="hero-stat">
-                <div class="hero-stat-label">Kategori</div>
-                <div class="hero-stat-val">{{ $ticket->category ? $ticket->category->category_name : '—' }}</div>
-            </div>
-        </div>
-    </div>
 
-    {{-- Main layout --}}
-    <div class="layout">
-
-        {{-- Left: detail + replies + timeline --}}
-        <div class="col-main">
-
-            {{-- Detail Tiket Card --}}
-            <div class="card">
-                <div class="card-head">
-                    <div class="card-head-ico">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        {{-- Hero card --}}
+        <div
+            class="bg-white rounded-[24px] border border-slate-200 mb-8 shadow-[0_2px_1px_rgba(0,0,0,.02),0_12px_40px_rgba(0,0,0,.04)] overflow-hidden animate-fade-up delay-40">
+            <div class="p-8 flex items-center justify-between gap-8 flex-wrap border-b border-slate-100">
+                <div class="flex items-center gap-6"> {{-- Icon wrapper dengan bayangan halus --}}
+                    <div
+                        class="w-16 h-16 shrink-0 rounded-[20px] flex items-center justify-center shadow-sm {{ $ringMap[$sk] ?? $ringMap['open'] }}">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                d="{{ $sico }}" />
                         </svg>
                     </div>
-                    <span class="card-head-title">Detail Tiket</span>
+
+                    <div>
+                        <div class="flex items-center gap-3 mb-1">
+                            <p
+                                class="font-['DM_Mono',monospace] text-2xl font-bold text-slate-900 tracking-tight m-0 uppercase">
+                                {{ $ticket->ticket_code }}</p>
+                            {{-- Dot indikator kecil di samping kode --}}
+                            <span class="w-2 h-2 rounded-full {{ $dotMap[$sk] ?? $dotMap['open'] }}"></span>
+                        </div>
+                        <p class="text-[15px] text-slate-500 m-0 max-w-[480px] leading-relaxed">{{ $ticket->title }}</p>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="field">
-                        <div class="field-lbl">Judul Laporan</div>
-                        <div class="field-val">{{ $ticket->title }}</div>
-                    </div>
-                    <div class="field-row field">
-                        <div>
-                            <div class="field-lbl">Kategori</div>
-                            @if($ticket->category)
-                                <span class="pill cat">{{ $ticket->category->category_name }}</span>
-                            @else
-                                <span class="pill none">Tidak ada</span>
-                            @endif
-                        </div>
-                        <div>
-                            <div class="field-lbl">Prioritas</div>
-                            <span class="pill {{ $pri['cls'] }}">{{ $pri['lbl'] }}</span>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="field-lbl">Deskripsi Masalah</div>
-                        <div class="field-val desc">{{ $ticket->description }}</div>
+
+                <div class="flex flex-col items-end gap-3">
+                    <span
+                        class="inline-flex items-center gap-2.5 px-5 py-2 rounded-full text-[13px] font-bold tracking-wide {{ $badgeMap[$sk] ?? $badgeMap['open'] }} border border-black/5">
+                        {{ $slbl }}
+                    </span>
+                    <div class="flex items-center gap-1.5 text-slate-400">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-[12px]">Update: {{ $ticket->updated_at->diffForHumans() }}</span>
                     </div>
                 </div>
             </div>
 
-            {{-- BALASAN ADMIN --}}
-            @if($ticket->replies && $ticket->replies->count() > 0)
-            <div class="card">
-                <div class="card-head">
-                    <div class="card-head-ico">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                        </svg>
-                    </div>
-                    <span class="card-head-title">Balasan Admin</span>
+            {{-- Info Bar di bawah --}}
+            <div class="grid grid-cols-2 lg:grid-cols-4 bg-slate-50/50">
+                <div class="px-8 py-5 border-r border-slate-100">
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-[1.5px] mb-1">Pelapor</div>
+                    <div class="text-[14px] font-semibold text-slate-700 truncate">{{ $ticket->client_name }}</div>
                 </div>
-                <div class="card-body">
-                    <div class="space-y-4">
-                        @foreach($ticket->replies as $reply)
-                            @if($reply->sender_type === 'admin')
-                            <div class="reply-item" style="background: #f5f3ff; border-left: 4px solid #5b5ef4; border-radius: 12px; padding: 16px; transition: all 0.2s ease;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        <div style="width: 40px; height: 40px; background: #e0e7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                            <svg style="width: 20px; height: 20px; color: #5b5ef4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                      d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p style="font-weight: 700; color: #1f2937; font-size: 14px; margin: 0;">
-                                                {{ $reply->user ? $reply->user->name : 'Admin' }}
-                                            </p>
-                                            <p style="font-size: 11px; color: #9ca3af; font-family: monospace; margin: 4px 0 0 0;">
-                                                {{ $reply->created_at->format('d M Y, H:i') }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <span style="padding: 4px 12px; background: #5b5ef4; color: white; border-radius: 20px; font-size: 11px; font-weight: 600;">
-                                        Admin
-                                    </span>
-                                </div>
-                                <div style="color: #374151; font-size: 14px; line-height: 1.6; white-space: pre-line; padding-left: 52px;">
-                                    {{ $reply->message }}
-                                </div>
+                <div class="px-8 py-5 border-r border-slate-100">
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-[1.5px] mb-1">Prioritas</div>
+                    <div class="text-[14px] font-semibold text-slate-700 flex items-center gap-2">
+                        <span
+                            class="w-2 h-2 rounded-full {{ $ticket->priority === 'high' ? 'bg-red-500' : ($ticket->priority === 'medium' ? 'bg-amber-500' : 'bg-emerald-500') }}"></span>
+                        {{ $pri['lbl'] }}
+                    </div>
+                </div>
+                <div class="px-8 py-5 border-r border-slate-100">
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-[1.5px] mb-1">Kategori</div>
+                    <div class="text-[14px] font-semibold text-slate-700">
+                        {{ $ticket->category ? $ticket->category->category_name : 'General' }}</div>
+                </div>
+                <div class="px-8 py-5">
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-[1.5px] mb-1">Dibuat Pada</div>
+                    <div class="text-[14px] font-semibold text-slate-700 font-['DM_Mono']">
+                        {{ $ticket->created_at->format('d M Y') }}</div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Main layout --}}
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-6 items-start animate-fade-up delay-100">
+
+            {{-- Left: detail + replies + timeline --}}
+            <div class="flex flex-col gap-5">
+
+                {{-- Detail Tiket Card --}}
+                <div
+                    class="bg-white rounded-[16px] border border-slate-200 shadow-[0_2px_1px_rgba(0,0,0,.02),0_8px_32px_rgba(0,0,0,.06)] overflow-hidden">
+                    <div class="px-5 py-4 border-b border-slate-200 flex items-center gap-2.5">
+                        <div
+                            class="w-[30px] h-[30px] bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
+                        <span class="text-[13.5px] font-bold text-slate-900">Detail Tiket</span>
+                    </div>
+                    <div class="p-5">
+                        <div class="mb-5">
+                            <div class="text-[11px] font-semibold tracking-wide uppercase text-slate-400 mb-1.5">Judul
+                                Laporan</div>
+                            <div class="text-[14px] font-medium text-slate-900 leading-relaxed">{{ $ticket->title }}</div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                            <div>
+                                <div class="text-[11px] font-semibold tracking-wide uppercase text-slate-400 mb-1.5">
+                                    Kategori</div>
+                                @if ($ticket->category)
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[12.5px] font-semibold">{{ $ticket->category->category_name }}</span>
+                                @else
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 bg-slate-100 text-slate-500 rounded-full text-[12.5px] font-semibold">Tidak
+                                        ada</span>
+                                @endif
                             </div>
-                            @endif
-                        @endforeach
+                            <div>
+                                <div class="text-[11px] font-semibold tracking-wide uppercase text-slate-400 mb-1.5">
+                                    Prioritas</div>
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-[12.5px] font-semibold {{ $pri['cls'] }}">{{ $pri['lbl'] }}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[11px] font-semibold tracking-wide uppercase text-slate-400 mb-1.5">Deskripsi
+                                Masalah</div>
+                            <div
+                                class="bg-slate-50 rounded-[10px] p-4 font-normal text-[13.5px] text-slate-700 whitespace-pre-line leading-relaxed">
+                                {{ $ticket->description }}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            @else
-            <div class="card">
-                <div class="card-head">
-                    <div class="card-head-ico">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                        </svg>
-                    </div>
-                    <span class="card-head-title">Balasan Admin</span>
-                </div>
-                <div class="card-body">
-                    <div style="text-align: center; padding: 32px 16px;">
-                        <svg style="width: 48px; height: 48px; color: #d1d5db; margin: 0 auto 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                        <p style="color: #6b7280; font-size: 14px; margin: 0;">Belum ada balasan dari admin</p>
-                        <p style="color: #9ca3af; font-size: 12px; margin-top: 8px;">Admin akan membalas tiket Anda segera</p>
-                    </div>
-                </div>
-            </div>
-            @endif
 
-            {{-- Riwayat Status Card --}}
-            <div class="card">
-                <div class="card-head">
-                    <div class="card-head-ico">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                {{-- BALASAN ADMIN --}}
+                @if ($ticket->replies && $ticket->replies->count() > 0)
+                    <div
+                        class="bg-white rounded-[16px] border border-slate-200 shadow-[0_2px_1px_rgba(0,0,0,.02),0_8px_32px_rgba(0,0,0,.06)] overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-200 flex items-center gap-2.5">
+                            <div
+                                class="w-[30px] h-[30px] bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                            </div>
+                            <span class="text-[13.5px] font-bold text-slate-900">Balasan Admin</span>
+                        </div>
+                        <div class="p-5">
+                            <div class="space-y-4">
+                                @foreach ($ticket->replies as $reply)
+                                    @if ($reply->sender_type === 'admin')
+                                        <div
+                                            class="bg-indigo-50/50 border-l-4 border-indigo-500 rounded-xl p-4 transition-transform duration-200 hover:translate-x-1">
+                                            <div class="flex justify-between items-start mb-3">
+                                                <div class="flex items-center gap-3">
+                                                    <div
+                                                        class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="font-bold text-slate-800 text-[14px] m-0">
+                                                            {{ $reply->user ? $reply->user->name : 'Admin' }}
+                                                        </p>
+                                                        <p class="text-[11px] text-slate-400 font-mono mt-1 mb-0">
+                                                            {{ $reply->created_at->format('d M Y, H:i') }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <span
+                                                    class="px-3 py-1 bg-indigo-600 text-white rounded-full text-[11px] font-semibold">
+                                                    Admin
+                                                </span>
+                                            </div>
+                                            <div
+                                                class="text-slate-700 text-[14px] leading-relaxed whitespace-pre-line pl-[52px]">
+                                                {{ $reply->message }}
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
-                    <span class="card-head-title">Riwayat Status</span>
-                </div>
-                <div class="card-body">
-                    <div class="timeline">
-                        @php
-                            $icons = [
-                                'open'        => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-                                'in_progress' => 'M13 10V3L4 14h7v7l9-11h-7z',
-                                'closed'      => 'M5 13l4 4L19 7',
-                            ];
-                            $notes = [
-                                'open'        => 'Tiket masuk dan menunggu penanganan tim support',
-                                'in_progress' => 'Tim sedang menganalisis dan mengerjakan solusi',
-                                'closed'      => 'Tiket telah diselesaikan dan ditutup',
-                            ];
-                        @endphp
+                @else
+                    <div
+                        class="bg-white rounded-[16px] border border-slate-200 shadow-[0_2px_1px_rgba(0,0,0,.02),0_8px_32px_rgba(0,0,0,.06)] overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-200 flex items-center gap-2.5">
+                            <div
+                                class="w-[30px] h-[30px] bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                            </div>
+                            <span class="text-[13.5px] font-bold text-slate-900">Balasan Admin</span>
+                        </div>
+                        <div class="p-8 text-center">
+                            <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            <p class="text-slate-500 text-[14px] m-0">Belum ada balasan dari admin</p>
+                            <p class="text-slate-400 text-[12px] mt-2">Admin akan membalas tiket Anda segera</p>
+                        </div>
+                    </div>
+                @endif
 
-                        @foreach($ticket->histories as $i => $history)
+                {{-- Riwayat Status Card --}}
+                <div
+                    class="bg-white rounded-[16px] border border-slate-200 shadow-[0_2px_1px_rgba(0,0,0,.02),0_8px_32px_rgba(0,0,0,.06)] overflow-hidden">
+                    <div class="px-5 py-4 border-b border-slate-200 flex items-center gap-2.5">
+                        <div
+                            class="w-[30px] h-[30px] bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <span class="text-[13.5px] font-bold text-slate-900">Riwayat Status</span>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex flex-col">
                             @php
-                                $hsk  = strtolower($history->status);
-                                $hlbl = ['open'=>'Open','in_progress'=>'In Progress','closed'=>'Closed'][$hsk] ?? ucfirst($hsk);
-                                $isLast = $loop->last;
+                                $icons = [
+                                    'open' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+                                    'in_progress' => 'M13 10V3L4 14h7v7l9-11h-7z',
+                                    'closed' => 'M5 13l4 4L19 7',
+                                ];
+                                $notes = [
+                                    'open' => 'Tiket masuk dan menunggu penanganan tim support',
+                                    'in_progress' => 'Tim sedang menganalisis dan mengerjakan solusi',
+                                    'closed' => 'Tiket telah diselesaikan dan ditutup',
+                                ];
                             @endphp
-                            <div class="tl-item">
-                                <div class="tl-dot {{ $isLast ? ($hsk === 'closed' ? 'done' : 'active') : 'ok' }}">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        @if(!$isLast)
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                        @else
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icons[$hsk] ?? $icons['open'] }}"/>
-                                        @endif
-                                    </svg>
-                                </div>
-                                <div class="tl-body">
-                                    <div class="tl-title">
-                                        @if($loop->first)
-                                            Tiket Dibuat
-                                        @else
-                                            Status diubah → {{ $hlbl }}
-                                        @endif
+
+                            @foreach ($ticket->histories as $i => $history)
+                                @php
+                                    $hsk = strtolower($history->status);
+                                    $hlbl =
+                                        ['open' => 'Open', 'in_progress' => 'In Progress', 'closed' => 'Closed'][
+                                            $hsk
+                                        ] ?? ucfirst($hsk);
+                                    $isLast = $loop->last;
+
+                                    // Map classes for dots
+                                    $dotCls = 'bg-green-50 text-green-600'; // ok
+                                    if ($isLast) {
+                                        $dotCls =
+                                            $hsk === 'closed'
+                                                ? 'bg-slate-100 text-slate-400'
+                                                : 'bg-indigo-50 text-indigo-600';
+                                    }
+                                @endphp
+                                <div class="flex gap-3.5 relative">
+                                    @if (!$isLast)
+                                        <div class="absolute left-[15px] top-[33px] bottom-0 w-[1.5px] bg-slate-200"></div>
+                                    @endif
+                                    <div
+                                        class="w-8 h-8 shrink-0 rounded-full relative z-10 flex items-center justify-center {{ $dotCls }}">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            @if (!$isLast)
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M5 13l4 4L19 7" />
+                                            @else
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="{{ $icons[$hsk] ?? $icons['open'] }}" />
+                                            @endif
+                                        </svg>
                                     </div>
-                                    <div class="tl-desc">
-                                        {{ $history->note ?? $notes[$hsk] ?? '' }}
-                                        @if($history->changed_by && $history->changed_by !== 'System')
-                                            <span style="color:var(--accent);font-weight:600"> · {{ $history->changed_by }}</span>
-                                        @endif
+                                    <div class="flex-1 pb-5.5 pt-1">
+                                        <div class="text-[13px] font-semibold text-slate-900">
+                                            @if ($loop->first)
+                                                Tiket Dibuat
+                                            @else
+                                                Status diubah → {{ $hlbl }}
+                                            @endif
+                                        </div>
+                                        <div class="text-[12px] text-slate-500 mt-0.5 leading-relaxed">
+                                            {{ $history->note ?? ($notes[$hsk] ?? '') }}
+                                            @if ($history->changed_by && $history->changed_by !== 'System')
+                                                <span class="text-indigo-600 font-semibold"> ·
+                                                    {{ $history->changed_by }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="font-['DM_Mono',monospace] text-[11px] text-slate-400 mt-1.5">
+                                            {{ $history->created_at->format('d M Y, H:i') }}</div>
                                     </div>
-                                    <div class="tl-time">{{ $history->created_at->format('d M Y, H:i') }}</div>
                                 </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- Right: sidebar --}}
+            <div class="flex flex-col gap-4">
+
+                <div
+                    class="bg-white rounded-[16px] border border-slate-200 shadow-[0_2px_1px_rgba(0,0,0,.02),0_8px_32px_rgba(0,0,0,.06)] overflow-hidden">
+                    <div class="px-5 py-4 border-b border-slate-200 flex items-center gap-2.5">
+                        <div
+                            class="w-[30px] h-[30px] bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                        <span class="text-[13.5px] font-bold text-slate-900">Pelapor</span>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex flex-col divide-y divide-slate-200">
+                            <div class="flex justify-between items-center py-2.5 first:pt-0 last:pb-0 gap-3">
+                                <span class="text-[12px] text-slate-500 shrink-0">Nama</span>
+                                <span
+                                    class="text-[12.5px] font-semibold text-slate-900 text-right break-all">{{ $ticket->client_name }}</span>
                             </div>
-                        @endforeach
+                            <div class="flex justify-between items-center py-2.5 first:pt-0 last:pb-0 gap-3">
+                                <span class="text-[12px] text-slate-500 shrink-0">Email</span>
+                                <span
+                                    class="text-[11.5px] font-semibold text-slate-900 text-right break-all">{{ $ticket->client_email }}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2.5 first:pt-0 last:pb-0 gap-3">
+                                <span class="text-[12px] text-slate-500 shrink-0">Tanggal</span>
+                                <span
+                                    class="font-['DM_Mono',monospace] text-[11.5px] font-semibold text-slate-900 text-right break-all">{{ $ticket->created_at->format('d M Y') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-[16px] border border-slate-200 shadow-[0_2px_1px_rgba(0,0,0,.02),0_8px_32px_rgba(0,0,0,.06)] overflow-hidden">
+                    <div class="px-5 py-4 border-b border-slate-200 flex items-center gap-2.5">
+                        <div
+                            class="w-[30px] h-[30px] bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <span class="text-[13.5px] font-bold text-slate-900">Aksi</span>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex flex-col gap-2.5">
+                            <a href="{{ route('user.tickets.create') }}"
+                                class="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-[10px] text-[13px] font-semibold font-['Sora',sans-serif] transition-all hover:bg-indigo-700 hover:-translate-y-px shadow-[0_4px_14px_rgba(91,94,244,.3)] hover:shadow-[0_6px_20px_rgba(91,94,244,.4)]">
+                                <svg class="w-[15px] h-[15px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4" />
+                                </svg>
+                                Buat Tiket Baru
+                            </a>
+                            <a href="{{ route('user.home') }}"
+                                class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-slate-700 border-[1.5px] border-slate-200 rounded-[10px] text-[13px] font-semibold font-['Sora',sans-serif] transition-all hover:bg-slate-50 hover:border-slate-400 hover:text-slate-900">
+                                <svg class="w-[15px] h-[15px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                Kembali ke Beranda
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-[16px] bg-indigo-50 border border-indigo-600/15 p-5">
+                    <div class="text-[13px] font-bold text-indigo-600 mb-1.5">💬 Butuh Bantuan?</div>
+                    <div class="text-[12px] text-slate-700 leading-relaxed mb-3.5">Tim kami siap membantu. Hubungi kami
+                        jika ada pertanyaan lebih lanjut seputar tiket Anda.</div>
+                    <div class="flex flex-col gap-2">
+                        <a href="mailto:support@helpdesk.com"
+                            class="inline-flex items-center gap-1.5 text-[12px] font-semibold text-indigo-600 bg-white border border-indigo-600/15 rounded-lg px-3 py-2 transition-colors hover:bg-indigo-100">
+                            <svg class="w-[13px] h-[13px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            support@helpdesk.com
+                        </a>
+                        <a href="tel:+622112345678"
+                            class="inline-flex items-center gap-1.5 text-[12px] font-semibold text-indigo-600 bg-white border border-indigo-600/15 rounded-lg px-3 py-2 transition-colors hover:bg-indigo-100">
+                            <svg class="w-[13px] h-[13px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            (021) 1234-5678
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        {{-- Info strip --}}
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 animate-fade-up delay-180">
+
+            <div
+                class="group bg-white/70 backdrop-blur-md border border-white rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div class="flex flex-col gap-4">
+                    <div
+                        class="w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white shadow-sm">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-[15px] font-bold text-slate-900 mb-1">Respon Cepat</h3>
+                        <p class="text-[12.5px] text-slate-500 leading-relaxed">Tim kami merespons dalam waktu kurang dari
+                            24 jam kerja.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="group bg-white/70 backdrop-blur-md border border-white rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div class="flex flex-col gap-4">
+                    <div
+                        class="w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center bg-violet-50 text-violet-600 transition-colors group-hover:bg-violet-600 group-hover:text-white shadow-sm">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-[15px] font-bold text-slate-900 mb-1">Notifikasi Email</h3>
+                        <p class="text-[12.5px] text-slate-500 leading-relaxed">Setiap update status akan langsung dikirim
+                            ke kotak masuk Anda.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="group bg-white/70 backdrop-blur-md border border-white rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div class="flex flex-col gap-4">
+                    <div
+                        class="w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-600 group-hover:text-white shadow-sm">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-[15px] font-bold text-slate-900 mb-1">Data Aman</h3>
+                        <p class="text-[12.5px] text-slate-500 leading-relaxed">Privasi dan informasi Anda dilindungi
+                            dengan standar keamanan tinggi.</p>
                     </div>
                 </div>
             </div>
 
         </div>
 
-        {{-- Right: sidebar --}}
-        <div class="col-side">
-
-            <div class="card">
-                <div class="card-head">
-                    <div class="card-head-ico">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                    </div>
-                    <span class="card-head-title">Pelapor</span>
-                </div>
-                <div class="card-body">
-                    <div class="meta-list">
-                        <div class="meta-row">
-                            <span class="meta-k">Nama</span>
-                            <span class="meta-v">{{ $ticket->client_name }}</span>
-                        </div>
-                        <div class="meta-row">
-                            <span class="meta-k">Email</span>
-                            <span class="meta-v" style="font-size:11.5px;">{{ $ticket->client_email }}</span>
-                        </div>
-                        <div class="meta-row">
-                            <span class="meta-k">Tanggal</span>
-                            <span class="meta-v" style="font-family:'DM Mono',monospace;font-size:11.5px;">{{ $ticket->created_at->format('d M Y') }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-head">
-                    <div class="card-head-ico">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                    </div>
-                    <span class="card-head-title">Aksi</span>
-                </div>
-                <div class="card-body">
-                    <div class="actions">
-                        <a href="{{ route('user.tickets.create') }}" class="btn accent">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
-                            Buat Tiket Baru
-                        </a>
-                        <a href="{{ route('user.home') }}" class="btn outline">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                            </svg>
-                            Kembali ke Beranda
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="help-card">
-                <div class="help-title">💬 Butuh Bantuan?</div>
-                <div class="help-text">Tim kami siap membantu. Hubungi kami jika ada pertanyaan lebih lanjut seputar tiket Anda.</div>
-                <div class="help-links">
-                    <a href="mailto:support@helpdesk.com" class="help-link">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                        support@helpdesk.com
-                    </a>
-                    <a href="tel:+622112345678" class="help-link">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                        </svg>
-                        (021) 1234-5678
-                    </a>
-                </div>
-            </div>
-
-        </div>
     </div>
 
-    {{-- Info strip --}}
-    <div class="info-strip">
-        <div class="info-tile">
-            <div class="info-tile-ico blue">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="info-tile-title">Respons Cepat</div>
-                <div class="info-tile-text">Tim kami merespons dalam waktu kurang dari 24 jam</div>
-            </div>
-        </div>
-        <div class="info-tile">
-            <div class="info-tile-ico purple">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="info-tile-title">Notifikasi Email</div>
-                <div class="info-tile-text">Update status tiket dikirim langsung ke email Anda</div>
-            </div>
-        </div>
-        <div class="info-tile">
-            <div class="info-tile-ico green">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="info-tile-title">Data Aman</div>
-                <div class="info-tile-text">Semua informasi Anda dilindungi enkripsi SSL</div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-    @if(session('success'))
-        if(window.Toast) Toast.fire({ icon:'success', title:'{{ addslashes(session('success')) }}' });
-    @endif
-});
-</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (session('success'))
+                if (window.Toast) Toast.fire({
+                    icon: 'success',
+                    title: '{{ addslashes(session('success')) }}'
+                });
+            @endif
+        });
+    </script>
 @endsection

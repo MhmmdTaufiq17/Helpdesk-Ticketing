@@ -1,5 +1,6 @@
 import './bootstrap';
 import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 import Alpine from 'alpinejs';
 import focus from '@alpinejs/focus';
 import AOS from 'aos';
@@ -38,33 +39,51 @@ window.Toast = Swal.mixin({
 // ── NProgress Config ──
 NProgress.configure({
     showSpinner: true,
-    trickle: false,
+    trickle: true, // Ubah ke true agar loading terasa "jalan"
     minimum: 0.1,
     easing: 'ease',
     speed: 400,
-    parent: 'body',
 });
 
 window.NProgress = NProgress;
 
-// ── NProgress Page Loading ──
-function startLoading() {
+// ── Logika Loading Otomatis (User & Admin Identik) ──
+
+// 1. Start loading saat pindah halaman (klik link)
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (
+        link &&
+        link.href &&
+        !link.target &&
+        link.origin === window.location.origin &&
+        !link.href.includes('#') &&
+        !e.ctrlKey && !e.metaKey && !e.shiftKey
+    ) {
+        NProgress.start();
+    }
+});
+
+// 2. Start loading saat kirim form (Submit)
+// Ini yang bikin tombol "Kirim Balasan" atau "Simpan Status" otomatis ada loading
+document.addEventListener('submit', (e) => {
+    if (!e.defaultPrevented) {
+        NProgress.start();
+    }
+});
+
+// 3. Start loading saat awal load page
+document.addEventListener('DOMContentLoaded', () => {
     NProgress.start();
-}
+});
 
-function stopLoading() {
+// 4. Stop loading saat semua selesai dimuat
+window.addEventListener('load', () => {
     NProgress.done();
-}
+});
 
-startLoading();
-
-if (document.readyState === 'complete') {
-    stopLoading();
-} else {
-    window.addEventListener('load', stopLoading);
-}
-
-setTimeout(stopLoading, 8000);
+// Fallback jika proses terlalu lama
+setTimeout(() => NProgress.done(), 8000);
 
 // ── Axios Interceptors (untuk AJAX) ──
 if (window.axios) {

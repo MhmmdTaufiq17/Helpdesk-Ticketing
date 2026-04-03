@@ -7,7 +7,7 @@ use App\Models\Ticket;
 use App\Models\Category;
 use App\Rules\RecaptchaValidation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;          // [FIX #2] import Str
+use Illuminate\Support\Str;
 use App\Mail\TicketCreated;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +17,6 @@ class TicketController extends Controller
     public function create()
     {
         $categories = Category::orderBy('category_name', 'asc')->get();
-
         return view('user.tickets.create', compact('categories'));
     }
 
@@ -29,7 +28,9 @@ class TicketController extends Controller
             'title'                => 'required|string|max:255',
             'category_id'          => 'nullable|exists:categories,id',
             'description'          => 'required|string|max:5000',
-            'attachment'           => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
+            // UPDATE: Validasi array untuk multiple images, maks 5 file, hanya gambar
+            'attachment'           => 'nullable|array|max:5',
+            'attachment.*'         => 'image|mimes:jpg,jpeg,png|max:5120',
             'g-recaptcha-response' => ['required', new RecaptchaValidation()],
         ], [
             'client_name.required'          => 'Nama lengkap wajib diisi.',
@@ -38,34 +39,36 @@ class TicketController extends Controller
             'title.required'                => 'Judul laporan wajib diisi.',
             'category_id.exists'            => 'Kategori tidak valid.',
             'description.required'          => 'Deskripsi wajib diisi.',
-            'description.max'               => 'Deskripsi tidak boleh lebih dari 5000 karakter.',
-            'attachment.mimes'              => 'Format file tidak didukung. Gunakan: JPG, PNG, PDF, DOC, DOCX.',
-            'attachment.max'                => 'Ukuran file maksimal 5MB.',
+            'attachment.max'                => 'Maksimal lampiran adalah 5 file.',
+            'attachment.*.image'            => 'File harus berupa gambar.',
+            'attachment.*.mimes'            => 'Format gambar tidak didukung. Gunakan: JPG, JPEG, atau PNG.',
+            'attachment.*.max'              => 'Ukuran tiap file maksimal 5MB.',
             'g-recaptcha-response.required' => 'Verifikasi reCAPTCHA wajib diisi.',
         ]);
 
-        // ── [FIX #2] Ticket code tidak bisa ditebak ───────────────────────────
-        // SEBELUM: rand(10000, 99999) → hanya 90.000 kombinasi, mudah di-brute-force
-        // SESUDAH: Str::random(8) → ~220 triliun kombinasi, menggunakan CSPRNG
+        // Generate Ticket Code
         do {
             $ticketCode = 'TKT-' . strtoupper(Str::random(8));
         } while (Ticket::where('ticket_code', $ticketCode)->exists());
 
-        // ── [FIX #3] Sanitasi input sebelum disimpan ke DB ────────────────────
-        // strip_tags() membuang semua tag HTML/JS sehingga data kotor
-        // tidak tersimpan dan tidak bisa memicu XSS saat ditampilkan kembali
+        // Sanitasi Input
         $clientName  = strip_tags(trim($validated['client_name']));
         $title       = strip_tags(trim($validated['title']));
         $description = strip_tags(trim($validated['description']));
 
-        // Handle file upload (belum diubah, akan diupgrade saat deploy)
-        $attachmentPath = null;
+        // UPDATE: Handle Multiple File Upload
+        $attachmentString = null;
         if ($request->hasFile('attachment')) {
-            $attachmentPath = $request->file('attachment')->store('attachments', 'public');
+            $paths = [];
+            foreach ($request->file('attachment') as $file) {
+                // Simpan file ke folder storage/app/public/attachments
+                $paths[] = $file->store('attachments', 'public');
+            }
+            // Karena kolom DB adalah VARCHAR, gabungkan path dengan koma
+            $attachmentString = implode(',', $paths);
         }
 
-        // ── [FIX #1] Hanya kirim kolom yang diizinkan ke create() ─────────────
-        // JANGAN pakai Ticket::create($request->all()) atau $validated langsung
+        // Simpan ke Database
         $ticket = Ticket::create([
             'ticket_code'  => $ticketCode,
             'client_name'  => $clientName,
@@ -73,7 +76,7 @@ class TicketController extends Controller
             'title'        => $title,
             'category_id'  => $validated['category_id'],
             'description'  => $description,
-            'attachment'   => $attachmentPath,
+            'attachment'   => $attachmentString, // Menyimpan string path (misal: "path1.jpg,path2.jpg")
             'status'       => 'open',
             'priority'     => 'medium',
         ]);
@@ -100,7 +103,6 @@ class TicketController extends Controller
     public function success($ticketCode)
     {
         $ticket = Ticket::where('ticket_code', $ticketCode)->firstOrFail();
-
         return view('user.tickets.success', compact('ticket'));
     }
 }
