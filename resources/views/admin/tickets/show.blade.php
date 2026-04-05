@@ -136,104 +136,10 @@
                 </div>
             </div>
 
-            {{-- Percakapan --}}
-            <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-                <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h2 class="text-sm font-bold text-gray-800">Percakapan</h2>
-                    <span
-                        class="text-xs font-semibold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">{{ $ticket->replies->count() }}
-                        balasan</span>
-                </div>
-                <div class="px-5 py-4">
-                    @if ($ticket->replies->isEmpty())
-                        <div class="text-center py-10">
-                            <svg class="w-8 h-8 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                            </svg>
-                            <p class="text-sm text-gray-400">Belum ada percakapan. Mulai balas tiket ini.</p>
-                        </div>
-                    @else
-                        <div class="space-y-4">
-                            @foreach ($ticket->replies as $reply)
-                                <div class="flex gap-3">
-                                    {{-- Avatar --}}
-                                    <div
-                                        class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold
-                                {{ $reply->sender_type === 'admin' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-500' }}">
-                                        {{ strtoupper(substr($reply->sender_type === 'admin' ? $reply->user?->name ?? 'A' : $ticket->client_name, 0, 1)) }}
-                                    </div>
-                                    {{-- Bubble --}}
-                                    <div
-                                        class="flex-1 {{ $reply->sender_type === 'admin' ? 'bg-indigo-50 border-indigo-100' : 'bg-gray-50 border-gray-100' }} border rounded-lg rounded-tl-none px-4 py-3">
-                                        <div class="flex items-center gap-2 mb-2 flex-wrap">
-                                            <span
-                                                class="text-sm font-semibold {{ $reply->sender_type === 'admin' ? 'text-indigo-600' : 'text-gray-700' }}">
-                                                {{ $reply->sender_type === 'admin' ? $reply->user?->name ?? 'Admin' : $ticket->client_name }}
-                                            </span>
-                                            <span
-                                                class="text-xs font-semibold px-2 py-0.5 rounded-full
-                                        {{ $reply->sender_type === 'admin' ? 'bg-indigo-500 text-white' : 'bg-gray-200 text-gray-500' }}">
-                                                {{ $reply->sender_type === 'admin' ? 'Admin' : ($reply->sender_type === 'system' ? 'System' : 'Pelapor') }}
-                                            </span>
-                                            <span
-                                                class="text-xs font-mono text-gray-400 ml-auto">{{ $reply->created_at->format('d M Y, H:i') }}</span>
-                                        </div>
-                                        <p class="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-                                            {{ $reply->message }}</p>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
+            {{-- Percakapan Real-time dengan Livewire --}}
+            @livewire('admin.ticket-chat', ['ticketId' => $ticket->id], key($ticket->id))
 
-                    {{-- Reply Form with Cooldown --}}
-                    @if ($ticket->status !== 'closed')
-                        <div class="mt-5 pt-5 border-t border-gray-100">
-                            <p class="text-xs font-semibold text-gray-500 mb-3">Tulis Balasan</p>
-                            <form method="POST" action="{{ route('admin.tickets.reply', $ticket->id) }}" id="replyForm">
-                                @csrf
-                                <div
-                                    class="border border-gray-200 rounded-xl overflow-hidden focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
-                                    <textarea name="message" id="replyTextarea" maxlength="2000" required placeholder="Tulis balasan untuk pelapor…"
-                                        class="w-full border-none bg-transparent text-sm text-gray-800 px-4 py-3 outline-none resize-none min-h-24 placeholder-gray-400"
-                                        {{ isset($replyCooldownUntil) && $replyCooldownUntil > time() ? 'disabled' : '' }}>{{ old('message') }}</textarea>
-                                    <div
-                                        class="flex items-center justify-between px-4 py-2.5 border-t border-gray-100 bg-gray-50">
-                                        <span class="text-xs text-gray-400"><span id="charCount">0</span>/2000</span>
-                                        <button type="submit" id="replyButton"
-                                            {{ isset($replyCooldownUntil) && $replyCooldownUntil > time() ? 'disabled' : '' }}
-                                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-indigo-500 hover:bg-indigo-600 transition-all shadow-sm {{ isset($replyCooldownUntil) && $replyCooldownUntil > time() ? 'opacity-50 cursor-not-allowed' : '' }}">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                            </svg>
-                                            Kirim Balasan
-                                        </button>
-                                    </div>
-                                </div>
-                                @error('message')
-                                    <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
-                                @enderror
-                            </form>
-                            @if (isset($replyCooldownUntil) && $replyCooldownUntil > time())
-                                <div class="mt-3 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-lg text-xs text-yellow-700"
-                                    id="replyCooldownMessage">
-                                    ⏱️ Mohon tunggu <span id="replyCooldownTimer">0</span> detik sebelum mengirim balasan
-                                    lagi.
-                                </div>
-                            @endif
-                        </div>
-                    @else
-                        <div
-                            class="mt-4 px-4 py-3 bg-gray-50 rounded-lg text-sm text-gray-400 text-center border border-gray-100">
-                            Tiket sudah ditutup. Ubah status untuk membalas kembali.
-                        </div>
-                    @endif
-                </div>
-            </div>
+
 
             {{-- Riwayat Status --}}
             <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
@@ -300,8 +206,7 @@
                     <h2 class="text-sm font-bold text-gray-800">Update Status</h2>
                 </div>
                 <div class="px-5 py-4">
-                    <form method="POST" action="{{ route('admin.tickets.update-status', $ticket->id) }}"
-                        id="statusForm">
+                    <form method="POST" action="{{ route('admin.tickets.update-status', $ticket->id) }}" id="statusForm">
                         @csrf
                         @method('PATCH')
                         <div class="space-y-3">

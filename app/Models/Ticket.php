@@ -11,6 +11,7 @@ class Ticket extends Model
 
     protected $fillable = [
         'ticket_code',
+        'user_id',
         'client_name',
         'client_email',
         'category_id',
@@ -18,7 +19,7 @@ class Ticket extends Model
         'description',
         'attachment',
         'status',
-        'priority'
+        'priority',
     ];
 
     protected static function boot()
@@ -27,7 +28,7 @@ class Ticket extends Model
 
         static::creating(function ($ticket) {
             if (empty($ticket->ticket_code)) {
-                $ticket->ticket_code = 'TKT' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+                $ticket->ticket_code = 'TKT'.str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
             }
         });
     }
@@ -44,11 +45,16 @@ class Ticket extends Model
 
     public function replies()
     {
-        return $this->hasMany(TicketReply::class);
+        return $this->hasMany(TicketReply::class)->orderBy('created_at', 'asc');
     }
 
     public function aiSuggestion()
     {
         return $this->hasOne(AiSuggestion::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

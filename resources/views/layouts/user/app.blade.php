@@ -13,6 +13,7 @@
         rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/public-session.js'])
+    @livewireStyles
 
     <style>
         .animate-content {
@@ -25,6 +26,9 @@
 
 <body
     class="font-['Sora',sans-serif] bg-slate-50 text-slate-950 antialiased min-h-screen flex flex-col m-0 overflow-x-hidden">
+
+    {{-- {{ @slot }} --}}
+
 
     {{-- ── NAV ── --}}
     <nav
@@ -217,6 +221,10 @@
         });
 
         document.addEventListener('submit', (e) => {
+            // Abaikan form yang dihandle Livewire (wire:submit)
+            if (e.target && (e.target.hasAttribute('wire:submit.prevent') || e.target.hasAttribute('wire:submit'))) {
+                return;
+            }
             // Jika form punya ID ticketForm, abaikan (jangan jalankan NProgress)
             if (e.target && e.target.id === 'ticketForm') {
                 return;
@@ -227,6 +235,9 @@
             }
         }, true); // Gunakan 'true' (capturing phase) jika stopPropagation di atas tidak mempan
     </script>
+
+    @livewireScripts
+    {{-- @vite('resources/js/app.js') --}}
     @stack('scripts')
 </body>
 

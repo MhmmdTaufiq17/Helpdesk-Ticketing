@@ -13,7 +13,12 @@ class TicketReply extends Model
         'ticket_id',
         'user_id',
         'sender_type',
-        'message'
+        'message',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function ticket()

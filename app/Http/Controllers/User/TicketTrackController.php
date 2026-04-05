@@ -38,10 +38,13 @@ public function showTrackResult($ticket_code)
     $ticketCode = strtoupper(trim($ticket_code));
 
     $ticket = Ticket::with(['category', 'histories', 'replies' => function($query) {
-                        $query->where('sender_type', 'admin'); // Hanya balasan admin
+                        $query->where('sender_type', 'admin');
                     }, 'replies.user'])
                     ->where('ticket_code', $ticketCode)
                     ->firstOrFail();
+
+    // Simpan ke session sebagai bukti akses
+    session(['tracked_ticket_code' => $ticket->ticket_code]);
 
     return view('user.tickets.track-result', compact('ticket'));
 }
